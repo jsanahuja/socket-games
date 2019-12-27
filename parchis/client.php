@@ -178,13 +178,35 @@
 
             }
 
+            function unrender_player($id){
+
+            }
+
             /*********************************
              *********************************
              *****   DATA features
              *********************************
              *********************************/
             
-             socket.on("data", function(data){
+            // User connect messages
+            socket.on("user_login", function (data) {
+                if(typeof data.username !== "undefined"){
+                    $('.chat-window[data-nav="global"]').append("<p><strong>" + data.username + "</strong> se ha conectado.</p>");
+                    players[data.id] = data;
+                    render_player(player.id);
+                }
+            });
+            
+            // User disconnect messages
+            socket.on("user_logout", function (data) {
+                if(typeof data.username !== "undefined"){
+                    $('.chat-window[data-nav="global"]').append("<p><strong>" + data.username + "</strong> se ha desconectado.</p>");
+                    delete players[data.id];
+                    unrender_player(data.id);
+                }
+            });
+
+            socket.on("data", function(data){
                 if(typeof data.players !== "undefined" && typeof data.rooms !== "undefined"){
                     players = data.players;
                     rooms = data.rooms;
@@ -192,6 +214,7 @@
                 }
                 console.log(players, "x", rooms);
             });
+
             socket.on("update_player", function(player){
                 players[player.id] = player;
                 render_player(player.id);
@@ -227,8 +250,6 @@
                     socket.emit("room_join", {
                         room: id
                     });
-                }else{
-                    console.log("ERR", room);
                 }
             });
             $(document).on("click", ".leave_room", function(){
@@ -245,20 +266,6 @@
              *****   CHAT features
              *********************************
              *********************************/
-            // User connect messages
-            socket.on("user_login", function (data) {
-                if(typeof data.username !== "undefined"){
-                    $('.chat-window[data-nav="global"]').append("<p><strong>" + data.username + "</strong> se ha conectado.</p>");
-                }
-            });
-            
-            // User disconnect messages
-            socket.on("user_logout", function (data) {
-                if(typeof data.username !== "undefined"){
-                    $('.chat-window[data-nav="global"]').append("<p><strong>" + data.username + "</strong> se ha desconectado.</p>");
-                }
-            });
-
             // Tab switching
             var chat_tab = "global";
             $('.chat-tab').on("click", function () {

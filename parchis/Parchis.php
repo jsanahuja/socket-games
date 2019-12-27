@@ -30,7 +30,7 @@ class Controller{
         }
 
         // @TODO: Auth / unique nickname
-        $socket->player = new Player(++$this->next_id, $data['username']);
+        $socket->player = new Player(++$this->next_id, $data['username'], $socket);
         $this->players[$socket->player->id] = $socket->player;
         
         $this->debug("CONNECT:SUCCESS: ". $socket->player->id .":". $socket->player->username);
@@ -66,21 +66,30 @@ class Controller{
                 'username'=> $socket->player->username,
                 'msg' => $data['msg']
             ));
-        }else{
+        }else if($data['chat'] == "room"){
             if($socket->player->room === null){
                 $this->debug("CHAT:ERROR: ". $socket->player->id .":". $socket->player->username .":room: Not in a room: " . $data['msg']);
+                return;
             }
             if(!isset($this->rooms[$socket->player->room])){
                 $this->debug("CHAT:ERROR: ". $socket->player->id .":". $socket->player->username .":room: Room does not exist: " . $data['msg']);
+                return;
             }
 
-            // foreach($this->rooms[$socket->player->room]->players as $player){
-
-            // }
+            $this->debug("CHAT:SUCCESS: ". $socket->player->id .":". $socket->player->username .":room:". $socket->player->room .": ". $data['msg']);
+            foreach($this->rooms[$socket->player->room]->players as $player){
+                $player->getSocket()->emit('message', array(
+                    'chat' => $data['chat'],
+                    'username'=> $socket->player->username,
+                    'msg' => $data['msg']
+                ));
+            }
 
             // $this->rooms
             // @TODO: Implement room chat
-            $this->debug("CHAT:ERROR:ROOM Not implemented ". $socket->player->id .":". $socket->player->username, $data);
+            
+        }else{
+            $this->debug("CHAT:ERROR: ". $socket->player->id .":". $socket->player->username .":unknown: ", $data);
         }
 
     }
@@ -210,10 +219,16 @@ class Player{
     public $id;
     public $username;
     public $room;
+    private $socket;
 
-    public function __construct($id, $username){
+    public function __construct($id, $username, $socket){
         $this->id = $id;
         $this->username = $username;
         $this->room = null;
+        $this->socket = $socket;
+    }
+
+    public function getSocket(){
+        return $this->socket;
     }
 }
