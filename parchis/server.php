@@ -41,54 +41,14 @@ $io->on('connection', function($socket) use($io) {
     $socket->on("message", function($data) use($socket, $controller){
         $controller->onMessage($socket, $data);
     });
-    $socket->on("room_leave", function($data) use($socket, $controller){
-        $controller->onRoomLeave($socket, $data);
+    $socket->on("room_leave", function() use($socket, $controller){
+        $controller->onRoomLeave($socket);
     });
     $socket->on("room_join", function($data) use($socket, $controller){
-        $controller->onRoomLeave($socket, $data);
+        $controller->onRoomJoin($socket, $data);
     });
     $socket->on("room_spectate", function($data) use($socket, $controller){
         $controller->onRoomSpectate($socket, $data);
-    });
-
-
-    $socket->on("room_join", function($data) use($socket, $io){
-        global $controller;
-
-        if(!isset($data["room"])){
-            return;
-        }
-
-        if($socket->player->room !== null){
-            $room = $socket->player->room;
-            if($controller->leave_room($socket->player)){
-                $io->emit("update_room", $controller->get_room($room));
-            }
-        }
-
-        if($controller->join_room($socket->player, $data["room"])){
-            $io->emit("update_player", $socket->player);
-            $io->emit("update_room", $controller->get_room($data["room"]));
-        }
-    });
-    $socket->on("room_join_spectator", function($data) use($socket, $io){
-        global $controller;
-
-        if(!isset($data["room"])){
-            return;
-        }
-
-        if($socket->player->room !== null){
-            $room = $socket->player->room;
-            if($controller->leave_room($socket->player)){
-                $io->emit("update_room", $controller->get_room($room));
-            }
-        }
-
-        if($controller->join_room_spectator($socket->player, $data["room"])){
-            $io->emit("update_player", $socket->player);
-            $io->emit("update_room", $controller->get_room($data["room"]));
-        }
     });
 });
 

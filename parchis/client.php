@@ -150,7 +150,7 @@
                 }
             }
 
-            function render_room(key){
+            function render_room(id){
                 // From scratch
                 if($("#room_" + id).length == 0){
                     $("#rooms").append(
@@ -158,10 +158,18 @@
                         "</div>"
                     );
                 }
+
+                var players_html = "",
+                    keys = Object.keys(rooms[id].players);
+                for(var i = 0; i < keys.length; i++){
+                    players_html += "<p>" + rooms[id].players[keys[i]].username + "</p>";
+                }
+
                 $("#room_" + id).html(
                     "<div class='room-header'>Mesa "+ id + "</div>"+
                     "<div class='room-content'>"+
                         "<button class='join_room' data-room='" + id + "'>Entrar</button>"+
+                        players_html +
                     "</div>"
                 );
             }
@@ -182,14 +190,17 @@
                     rooms = data.rooms;
                     render();
                 }
+                console.log(players, "x", rooms);
             });
             socket.on("update_player", function(player){
                 players[player.id] = player;
                 render_player(player.id);
+                console.log(players[player.id]);
             });
             socket.on("update_room", function(room){
                 rooms[room.id] = room;
                 render_room(room.id);
+                console.log(rooms[room.id]);
             });
 
             /*********************************
@@ -204,7 +215,7 @@
                 ROOM_MODE_INDIVIDUAL = <?php print ROOM_MODE_INDIVIDUAL; ?>,
                 ROOM_MODE_2V2 = <?php print ROOM_MODE_2V2; ?>;
 
-                $(document).on("click", ".join_room", function(){
+            $(document).on("click", ".join_room", function(){
                 var id = $(this).data("room"),
                     room = rooms[id];
                 
@@ -212,10 +223,12 @@
                     socket.emit("room_spectate", {
                         room: id
                     });
-                }else if(room.max_players > room.players.length){
+                }else if(room.max_players > Object.keys(room.players).length){
                     socket.emit("room_join", {
                         room: id
                     });
+                }else{
+                    console.log("ERR", room);
                 }
             });
             $(document).on("click", ".leave_room", function(){

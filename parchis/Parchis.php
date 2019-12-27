@@ -25,28 +25,31 @@ class Controller{
             return;
         }
 
-        // @TODO: Auth / unique nickname
+        if(isset($socket->player)){
+            $this->onDisconnect($socket);
+        }
 
-        $player = new Player(++$this->next_id, $username);
-        $client->player = $player;
+        // @TODO: Auth / unique nickname
+        $socket->player = new Player(++$this->next_id, $data['username']);
+        $this->players[$socket->player->id] = $socket->player;
         
         $this->debug("CONNECT:SUCCESS: ". $socket->player->id .":". $socket->player->username);
-        $io->emit('user_login', $player);
+        $this->io->emit('user_login', $socket->player);
         $socket->emit("data", $this->serialize());
     }
 
     public function onDisconnect(&$socket){
-        if(!isset($socket->player) || !in_array($socket->player, $this->players)){
+        if(!isset($socket->player) || !isset($this->players[$socket->player->id])){
             $this->debug("DISCONNECT:ERROR:1: Socket had no player");
             return;
         }
 
         if($socket->player->room != null){
-            $this->onLeaveRoom($socket->player);
+            $this->onLeaveRoom($socket);
         }
 
         $this->debug("DISCONNECT:SUCCESS: ". $socket->player->id .":". $socket->player->username);
-        $io->emit('user_logout', $socket->player);
+        $this->io->emit('user_logout', $socket->player);
         unset($this->players[$socket->player->id]);
     }
 
@@ -58,50 +61,83 @@ class Controller{
 
         if($data['chat'] == "global"){
             $this->debug("CHAT:SUCCESS: ". $socket->player->id .":". $socket->player->username .":global: " . $data['msg']);
-            $io->emit('message', array(
+            $this->io->emit('message', array(
                 'chat' => $data['chat'],
                 'username'=> $socket->player->username,
                 'msg' => $data['msg']
             ));
         }else{
+            if($socket->player->room === null){
+                $this->debug("CHAT:ERROR: ". $socket->player->id .":". $socket->player->username .":room: Not in a room: " . $data['msg']);
+            }
+            if(!isset($this->rooms[$socket->player->room])){
+                $this->debug("CHAT:ERROR: ". $socket->player->id .":". $socket->player->username .":room: Room does not exist: " . $data['msg']);
+            }
+
+            // foreach($this->rooms[$socket->player->room]->players as $player){
+
+            // }
+
+            // $this->rooms
             // @TODO: Implement room chat
             $this->debug("CHAT:ERROR:ROOM Not implemented ". $socket->player->id .":". $socket->player->username, $data);
         }
 
     }
 
-    public function onLeaveRoom($player){
-
+    public function onLeaveRoom(&$socket){
+        if($socket->player->room !== null){
+            if(isset($this->rooms[$socket->player->room])){
+                $this->rooms[$socket->player->room]->leave($socket->player);
+                $this->io->emit("update_room", $this->rooms[$socket->player->room]);
+                
+                $this->debug("ROOM:LEAVE:SUCCESS: Player ". $socket->player->username ." left room #". $this->rooms[$socket->player->room]->id);
+            }
+            $socket->player->room = null;
+            $this->io->emit("update_player", $socket->player);
+        }
     }
 
+    public function onRoomJoin(&$socket, $data){
+        if(!isset($data["room"])){
+            $this->debug("ROOM:JOIN:ERROR:1: No room specified");
+            return;
+        }
+        if(!isset($this->rooms[$data["room"]])){
+            $this->debug("ROOM:JOIN:ERROR:2: Invalid room", $data["room"]);
+            return;
+        }
 
+        $this->onLeaveRoom($socket);
 
-    public function get_room($room_id){
-        if(!isset($this->rooms[$room_id]))
-            return false;
-        return $this->rooms[$room_id];
-    }
-    
-    public function join_room($player, $room_id){
-        if(!isset($this->rooms[$room_id]))
-            return false;
-        return $this->rooms[$room_id]->join($player);
-    }
-
-    public function leave_room($player){
-        if(!isset($this->rooms[$player->room]))
-            return false;
-        return $this->rooms[$player->room]->leave($player) || 
-            $this->rooms[$player->room]->leave_spectate($player);
-    }
-
-    public function join_room_spectator($player, $room_id){
-        if(!isset($this->rooms[$room_id]))
-            return false;
-        return $this->rooms[$room_id]->join_spectate($player);
+        if($this->rooms[$data["room"]]->join($socket->player)){
+            $socket->player->room = $this->rooms[$data["room"]]->id;
+            $this->io->emit("update_room", $this->rooms[$data["room"]]);
+            $this->io->emit("update_player", $socket->player);
+            $this->debug("ROOM:JOIN:SUCCESS: Player ". $socket->player->username ." joined room #". $this->rooms[$data["room"]]->id);
+        }else{
+            $this->debug("ROOM:JOIN:ERROR:3: Unnable to join ", $this->rooms[$data["room"]]);
+        }
     }
 
+    public function onRoomSpectate(&$socket, $data){
+        if(!isset($data["room"])){
+            $this->debug("ROOM:SPECT:ERROR:1: No room specified");
+            return;
+        }
+        if(!isset($this->rooms[$data["room"]])){
+            $this->debug("ROOM:SPECT:ERROR:2: Invalid room", $data["room"]);
+            return;
+        }
 
+        $this->onLeaveRoom($socket);
+
+        if($this->rooms[$data["room"]]->spectate($socket->player)){
+            $socket->player->room = $this->rooms[$data["room"]]->id;
+            $this->io->emit("update_room", $this->rooms[$data["room"]]);
+            $this->io->emit("update_player", $socket->player);
+        }
+    }
 
     public function debug($msg, $data = null){
         echo $msg . "\n";
@@ -145,33 +181,27 @@ class Room{
             return false;
 
         $this->players[] = $player;
-        $player->room = $this->id;
         return true;
     }
 
-    public function leave($player){
+    public function leave(&$player){
         $index = array_search($player, $this->players);
-        if($index === false){
-            return false;
+        if($index !== false){
+            unset($this->players[$index]);
         }
-        unset($this->players[$index]);
-        $player->room = null;
-        return true;
-    }
-
-    public function join_spectate($player){
-        $this->spectators[] = $player;
-        $player->room = $this->id;
-        return true;
-    }
-
-    public function leave_spectate($player){
+        
         $index = array_search($player, $this->spectators);
-        if($index === false){
+        if($index !== false){
+            unset($this->spectators[$index]);
+        }
+    }
+
+    public function spectate($player){
+        if($this->status !== ROOM_STATUS_PLAYING){
             return false;
         }
-        unset($this->spectators[$index]);
-        $player->room = null;
+
+        $this->spectators[] = $player;
         return true;
     }
 }
