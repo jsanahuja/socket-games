@@ -1,5 +1,7 @@
 {
     "require": {
-        "workerman/phpsocket.io": "^1.1"
+        "workerman/phpsocket.io": "^1.1",
+        "psr/log": "^1.1",
+        "monolog/monolog": "^2.0"
     }
 }

@@ -16,6 +16,9 @@ require_once("Parchis.php");
 
 use Workerman\Worker;
 use PHPSocketIO\SocketIO;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
 
 $io = new SocketIO(PARCHIS_PORT, array(
     'ssl' => array(
@@ -27,7 +30,15 @@ $io = new SocketIO(PARCHIS_PORT, array(
     )
 ));
 
-$controller = new Controller($io);
+$logger = new Logger("");
+// the default date format is "Y-m-d\TH:i:sP"
+// the default output format is "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n"
+$formatter = new LineFormatter("[%datetime%]:%level_name%: %message%\n", "Y-m-d\TH:i:s");
+$stream = new StreamHandler(LOG_PATH . LOG_FILE, Logger::DEBUG);
+$stream->setFormatter($formatter);
+$logger->pushHandler($stream);
+
+$controller = new Controller($io, $logger);
 
 $io->on('connection', function($socket) use($io) {
     global $controller;
@@ -49,6 +60,13 @@ $io->on('connection', function($socket) use($io) {
     });
     $socket->on("room_spectate", function($data) use($socket, $controller){
         $controller->onRoomSpectate($socket, $data);
+    });
+
+    $socket->on("ready", function() use($socket, $controller){
+        $controller->onReady($socket);
+    });
+    $socket->on("unready", function() use($socket, $controller){
+        $controller->onUnready($socket);
     });
 });
 
