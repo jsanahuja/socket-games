@@ -9,16 +9,15 @@ set_time_limit(0);
 * mientras llega. */
 ob_implicit_flush();
 
-require_once("../vendor/autoload.php");
-require_once("../config.php");
-require_once("defines.php");
-require_once("Parchis.php");
+require_once(dirname(__dir__) . "/vendor/autoload.php");
 
 use Workerman\Worker;
 use PHPSocketIO\SocketIO;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
+use Games\Core\Controller;
+use Games\Games\Parchis;
 
 $io = new SocketIO(PARCHIS_PORT, array(
     'ssl' => array(
@@ -34,11 +33,11 @@ $logger = new Logger("");
 // the default date format is "Y-m-d\TH:i:sP"
 // the default output format is "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n"
 $formatter = new LineFormatter("[%datetime%]:%level_name%: %message%\n", "Y-m-d\TH:i:s");
-$stream = new StreamHandler(LOG_PATH . LOG_FILE, Logger::DEBUG);
+$stream = new StreamHandler(LOG_PATH . PARCHIS_LOG, Logger::DEBUG);
 $stream->setFormatter($formatter);
 $logger->pushHandler($stream);
 
-$controller = new Controller($io, $logger);
+$controller = new Controller($io, $logger, Parchis::class);
 
 $io->on('connection', function($socket) use($io) {
     global $controller;

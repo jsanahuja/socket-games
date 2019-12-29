@@ -3,5 +3,12 @@
         "workerman/phpsocket.io": "^1.1",
         "psr/log": "^1.1",
         "monolog/monolog": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Games\\Core\\": "core/base",
+            "Games\\Games\\": "core/games"
+        },
+        "files": [ "core/globals.php" ]
     }
 }

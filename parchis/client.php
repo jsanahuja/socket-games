@@ -1,6 +1,6 @@
 <?php
-    require_once("../config.php");
-    require_once("defines.php");
+    // Manual, we do not need everything
+    require_once("../core/globals.php");
 ?>
 <!doctype html>
 <html>
@@ -284,7 +284,13 @@
             fix_game_size();
             $(window).on("resize", fix_game_size);
 
+            
 
+            var ROOM_STATUS_EMPTY = <?php print ROOM_STATUS_EMPTY; ?>,
+                ROOM_STATUS_WAITING = <?php print ROOM_STATUS_WAITING; ?>,
+                ROOM_STATUS_READY = <?php print ROOM_STATUS_READY; ?>,
+                ROOM_STATUS_PLAYING = <?php print ROOM_STATUS_PLAYING; ?>,
+                GAME_READY_TIME = GAME_READY_TIME;
 
             var socket = io("https://games.sowecms.com:<?php print PARCHIS_PORT; ?>"),
                 players = {},
@@ -320,10 +326,10 @@
              *********************************/
 
             var readyModal, pendingModal;
-            socket.on('ready', function(data){
+            socket.on('ready', function(){
                 readyModal = new gModal({
                     title: "La partida va a empezar. ¿Estás list@?",
-                    body: "<div class=\"ready-timer\"></div>",
+                    body: "<div class=\"ready-timer\">"+ GAME_READY_TIME +"</div>",
                     buttons: [{
                         content: "¡Vamos!",
                         classes: "gmodal-button-blue",
@@ -349,11 +355,12 @@
                         }
                     },
                     onShow: function(modal){
+                        var time = GAME_READY_TIME;
                         var interval = setInterval(function(){
-                            --data.time;
-                            $(".ready-timer").text(data.time);
+                            --time;
+                            $(".ready-timer").text(time);
                             
-                            if(data.time <= 0)
+                            if(time <= 0)
                                 clearInterval(interval);
                         }, 1000);
                     },
@@ -475,14 +482,6 @@
              *****   ROOM features
              *********************************
              *********************************/
-
-            var ROOM_STATUS_EMPTY = <?php print ROOM_STATUS_EMPTY; ?>,
-                ROOM_STATUS_WAITING = <?php print ROOM_STATUS_EMPTY; ?>,
-                ROOM_STATUS_READY = <?php print ROOM_STATUS_READY; ?>,
-                ROOM_STATUS_PLAYING = <?php print ROOM_STATUS_PLAYING; ?>,
-                ROOM_MODE_INDIVIDUAL = <?php print ROOM_MODE_INDIVIDUAL; ?>,
-                ROOM_MODE_2V2 = <?php print ROOM_MODE_2V2; ?>;
-
             $(document).on("click", ".join_room", function(){
                 var id = $(this).data("room"),
                     room = rooms[id];
@@ -494,7 +493,10 @@
                     socket.emit("room_spectate", {
                         room: id
                     });
-                }else if(room.max_players > Object.keys(room.players).length){
+                }else if(
+                    (room.status === ROOM_STATUS_EMPTY) ||
+                    (room.status === ROOM_STATUS_WAITING && room.numplayers > Object.keys(room.players).length)
+                ){
                     socket.emit("room_join", {
                         room: id
                     });
