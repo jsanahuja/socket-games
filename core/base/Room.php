@@ -155,7 +155,7 @@ abstract class Room{
             case ROOM_STATUS_READY . "x" . ROOM_STATUS_WAITING:
                 break;
             case ROOM_STATUS_READY . "x" . ROOM_STATUS_PLAYING:
-                $this->setup();
+                $this->start();
                 break;
 
             // Playing
@@ -193,7 +193,9 @@ abstract class Room{
         }, array(), false);
     }
 
-    abstract protected function setup();
+    abstract protected function start();
+
+    abstract protected function finish();
 
     public function __toString(){
         return "#" . $this->id;

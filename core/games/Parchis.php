@@ -14,7 +14,7 @@ class Parchis extends Room{
         $this->setNumplayers(4);
     }
 
-    protected function setup(){
+    protected function start(){
         // raffle start
         $raffle = array();
         foreach($this->players as $player){
@@ -25,5 +25,9 @@ class Parchis extends Room{
         }
         
         $this->controller->roomEmit($this->id, "play", $raffle);
+    }
+
+    protected function finish(){
+
     }
 }

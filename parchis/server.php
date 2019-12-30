@@ -14,6 +14,7 @@ require_once(dirname(__dir__) . "/vendor/autoload.php");
 use Workerman\Worker;
 use PHPSocketIO\SocketIO;
 use Monolog\Logger;
+use Monolog\ErrorHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
 use Games\Core\Controller;
@@ -36,6 +37,10 @@ $formatter = new LineFormatter("[%datetime%]:%level_name%: %message%\n", "Y-m-d\
 $stream = new StreamHandler(LOG_PATH . PARCHIS_LOG, Logger::DEBUG);
 $stream->setFormatter($formatter);
 $logger->pushHandler($stream);
+$handler = new ErrorHandler($logger);
+$handler->registerErrorHandler([], false);
+$handler->registerExceptionHandler();
+$handler->registerFatalHandler();
 
 $controller = new Controller($io, $logger, Parchis::class);
 

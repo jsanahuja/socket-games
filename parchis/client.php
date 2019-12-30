@@ -52,7 +52,7 @@
 
         .gmodal-body .ready-timer{text-align: center;font-size: 2em;}
 
-        #game #play{display:none;position:relative;margin:10px auto;border-radius:20px;background-color: #FFF;}
+        #game #play{position:relative;margin:10px auto;border-radius:20px;background-color: #FFF;}
         #game #play #square_yellow {position:absolute;width:30%;height:30%;background:#ffff75;left:0px;top:0px;border-top-left-radius:50%}
         #game #play #square_green  {position:absolute;width:30%;height:30%;background:#64e064;right:0px;top:0px;border-top-right-radius:50%}
         #game #play #square_blue   {position:absolute;width:30%;height:30%;background:#3c9cff;left:0px;bottom:0px;border-bottom-left-radius:50%}
@@ -87,6 +87,8 @@
         #game #play #area_center .center_center .blue   {position:absolute;width:50%;height:50%;left:0%;top:50%;}
         #game #play #area_center .center_center .red    {position:absolute;width:50%;height:50%;left:50%;top:50%;}
         #game #play #area_center .center_center .dices  {position:absolute;width:50%;height:50%;left:25%;top:25%;background:#FFF;border-radius:100%;}
+    
+        #game #play .chip{position: absolute;top: 50px;left: 50px;height: 3%;width: 3%;border-radius: 100%;box-shadow: 0px 0px 2px 1px #000;}
     </style>
 </head>
 
@@ -241,8 +243,28 @@
                             <div class="dices"></div>
                         </div>
                     </div>
+
+                    <div class="chip yellow" id="chip_yellow_1"></div>
+                    <div class="chip yellow" id="chip_yellow_2"></div>
+                    <div class="chip yellow" id="chip_yellow_3"></div>
+                    <div class="chip yellow" id="chip_yellow_4"></div>
+                    
+                    <div class="chip blue" id="chip_blue_1"></div>
+                    <div class="chip blue" id="chip_blue_2"></div>
+                    <div class="chip blue" id="chip_blue_3"></div>
+                    <div class="chip blue" id="chip_blue_4"></div>
+
+                    <div class="chip red" id="chip_red_1"></div>
+                    <div class="chip red" id="chip_red_2"></div>
+                    <div class="chip red" id="chip_red_3"></div>
+                    <div class="chip red" id="chip_red_4"></div>
+
+                    <div class="chip green" id="chip_green_1"></div>
+                    <div class="chip green" id="chip_green_2"></div>
+                    <div class="chip green" id="chip_green_3"></div>
+                    <div class="chip green" id="chip_green_4"></div>
                 </div>
-                <div id="rooms" class="row"></div>
+                <div id="rooms" style="display:none;" class="row"></div>
             </div>
 
             <div id="chat" class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
@@ -290,7 +312,7 @@
                 ROOM_STATUS_WAITING = <?php print ROOM_STATUS_WAITING; ?>,
                 ROOM_STATUS_READY = <?php print ROOM_STATUS_READY; ?>,
                 ROOM_STATUS_PLAYING = <?php print ROOM_STATUS_PLAYING; ?>,
-                GAME_READY_TIME = GAME_READY_TIME;
+                GAME_READY_TIME = <?php print GAME_READY_TIME; ?>;
 
             var socket = io("https://games.sowecms.com:<?php print PARCHIS_PORT; ?>"),
                 players = {},
