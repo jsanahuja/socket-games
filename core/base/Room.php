@@ -174,6 +174,12 @@ abstract class Room{
         }
     }
 
+    /**
+     * Game management
+     */
+    
+    abstract public function onPlayerAction($player, $data);
+
     abstract protected function configure();
 
     protected function prepare(){
@@ -196,6 +202,7 @@ abstract class Room{
     abstract protected function start();
 
     abstract protected function finish();
+
 
     public function __toString(){
         return "#" . $this->id;

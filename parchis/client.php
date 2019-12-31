@@ -72,6 +72,10 @@
         #game #play .green{background:#64e064;color:#FFF;}
         #game #play .blue{background:#3c9cff;}
         #game #play .red{background:#ff4b4b;}
+        #game #play .lyellow{background:#fdfd94;}
+        #game #play .lgreen{background:#b1ffb1;}
+        #game #play .lblue{background:#afd6ff;}
+        #game #play .lred{background:#ffa6a6;}
         #game #play .box.secure{
             background-image: url(https://games.sowecms.com/parchis/assets/img/circle.svg);
             background-size: auto 80%;
@@ -88,7 +92,7 @@
         #game #play #area_center .center_center .red    {position:absolute;width:50%;height:50%;left:50%;top:50%;}
         #game #play #area_center .center_center .dices  {position:absolute;width:50%;height:50%;left:25%;top:25%;background:#FFF;border-radius:100%;}
     
-        #game #play .chip{position: absolute;top: 50px;left: 50px;height: 3%;width: 3%;border-radius: 100%;box-shadow: 0px 0px 2px 1px #000;}
+        #game #play .chip{position: absolute;z-index:10;top: 48.5%;left: 48.5%;height: 3%;width: 3%;border-radius: 100%;box-shadow: 0px 0px 2px 1px #000;}
     </style>
 </head>
 
@@ -96,7 +100,7 @@
     <div class="container-fluid">
         <div class="row">
             <div id="game" class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
-                <div id="play">                    
+                <div id="play">
                     <div id="square_red"></div>
                     <div id="square_blue"></div>
                     <div id="square_green"></div>
@@ -108,31 +112,31 @@
                         <div id="box_67"        class="bright box"><span>67</span></div>
 
                         <div id="box_2"         class="bleft box"><span>2</span></div>
-                        <div id="box_yellow_1"  class="bcenter box yellow"></div>
+                        <div id="box_69"        class="bcenter box yellow"></div>
                         <div id="box_66"        class="bright box"><span>66</span></div>
 
                         <div id="box_3"         class="bleft box"><span>3</span></div>
-                        <div id="box_yellow_2"  class="bcenter box yellow"></div>
+                        <div id="box_70"        class="bcenter box yellow"></div>
                         <div id="box_65"        class="bright box"><span>65</span></div>
 
                         <div id="box_4"         class="bleft box"><span>4</span></div>
-                        <div id="box_yellow_3"  class="bcenter box yellow"></div>
+                        <div id="box_71"        class="bcenter box yellow"></div>
                         <div id="box_64"        class="bright box"><span>64</span></div>
 
                         <div id="box_5"         class="bleft box yellow secure"><span>5</span></div>
-                        <div id="box_yellow_4"  class="bcenter box yellow"></div>
-                        <div id="box_63"        class="bright box green secure"><span>63</span></div>
+                        <div id="box_72"        class="bcenter box yellow"></div>
+                        <div id="box_63"        class="bright box lgreen secure"><span>63</span></div>
 
                         <div id="box_6"         class="bleft box"><span>6</span></div>
-                        <div id="box_yellow_5"  class="bcenter box yellow"></div>
+                        <div id="box_73"        class="bcenter box yellow"></div>
                         <div id="box_62"        class="bright box"><span>62</span></div>
 
                         <div id="box_7"         class="bleft box"><span>7</span></div>
-                        <div id="box_yellow_6"  class="bcenter box yellow"></div>
+                        <div id="box_74"        class="bcenter box yellow"></div>
                         <div id="box_61"        class="bright box"><span>61</span></div>
 
                         <div id="box_8"         class="bleft box"><span>8</span></div>
-                        <div id="box_yellow_7"  class="bcenter box yellow"></div>
+                        <div id="box_75"        class="bcenter box yellow"></div>
                         <div id="box_60"        class="bright box"><span>60</span></div>
                     </div>
                     <div id="area_right">
@@ -141,31 +145,31 @@
                         <div id="box_50"        class="bright box"><span>50</span></div>
 
                         <div id="box_53"        class="bleft box"><span>53</span></div>
-                        <div id="box_green_1"   class="bcenter box green"></div>
+                        <div id="box_93"        class="bcenter box green"></div>
                         <div id="box_49"        class="bright box"><span>49</span></div>
 
                         <div id="box_54"        class="bleft box"><span>54</span></div>
-                        <div id="box_green_2"   class="bcenter box green"></div>
+                        <div id="box_94"        class="bcenter box green"></div>
                         <div id="box_48"        class="bright box"><span>48</span></div>
 
                         <div id="box_55"        class="bleft box"><span>55</span></div>
-                        <div id="box_green_3"   class="bcenter box green"></div>
+                        <div id="box_95"        class="bcenter box green"></div>
                         <div id="box_47"        class="bright box"><span>47</span></div>
 
                         <div id="box_56"        class="bleft box green secure"><span>56</span></div>
-                        <div id="box_green_4"   class="bcenter box green"></div>
-                        <div id="box_46"        class="bright box red secure"><span>46</span></div>
+                        <div id="box_96"        class="bcenter box green"></div>
+                        <div id="box_46"        class="bright box lred secure"><span>46</span></div>
 
                         <div id="box_57"        class="bleft box"><span>57</span></div>
-                        <div id="box_green_5"   class="bcenter box green"></div>
+                        <div id="box_97"        class="bcenter box green"></div>
                         <div id="box_45"        class="bright box"><span>45</span></div>
 
                         <div id="box_58"        class="bleft box"><span>58</span></div>
-                        <div id="box_green_6"   class="bcenter box green"></div>
+                        <div id="box_98"        class="bcenter box green"></div>
                         <div id="box_44"        class="bright box"><span>44</span></div>
 
                         <div id="box_59"        class="bleft box"><span>59</span></div>
-                        <div id="box_green_7"   class="bcenter box green"></div>
+                        <div id="box_99"        class="bcenter box green"></div>
                         <div id="box_43"        class="bright box"><span>43</span></div>
                     </div>
                     <div id="area_bottom">
@@ -174,31 +178,31 @@
                         <div id="box_33"        class="bright box"><span>33</span></div>
 
                         <div id="box_36"        class="bleft box"><span>36</span></div>
-                        <div id="box_red_1"    class="bcenter box red"></div>
+                        <div id="box_85"    class="bcenter box red"></div>
                         <div id="box_32"        class="bright box"><span>32</span></div>
 
                         <div id="box_37"        class="bleft box"><span>37</span></div>
-                        <div id="box_red_2"    class="bcenter box red"></div>
+                        <div id="box_86"    class="bcenter box red"></div>
                         <div id="box_31"        class="bright box"><span>31</span></div>
 
                         <div id="box_38"        class="bleft box"><span>38</span></div>
-                        <div id="box_red_3"    class="bcenter box red"></div>
+                        <div id="box_87"    class="bcenter box red"></div>
                         <div id="box_30"        class="bright box"><span>30</span></div>
 
                         <div id="box_39"        class="bleft box red secure"><span>39</span></div>
-                        <div id="box_red_4"    class="bcenter box red"></div>
-                        <div id="box_29"        class="bright box blue secure"><span>29</span></div>
+                        <div id="box_88"    class="bcenter box red"></div>
+                        <div id="box_29"        class="bright box lblue secure"><span>29</span></div>
 
                         <div id="box_40"        class="bleft box"><span>40</span></div>
-                        <div id="box_red_5"    class="bcenter box red"></div>
+                        <div id="box_89"    class="bcenter box red"></div>
                         <div id="box_28"        class="bright box"><span>28</span></div>
 
                         <div id="box_41"        class="bleft box"><span>41</span></div>
-                        <div id="box_red_6"    class="bcenter box red"></div>
+                        <div id="box_90"    class="bcenter box red"></div>
                         <div id="box_27"        class="bright box"><span>27</span></div>
 
                         <div id="box_42"        class="bleft box"><span>42</span></div>
-                        <div id="box_red_7"    class="bcenter box red"></div>
+                        <div id="box_91"    class="bcenter box red"></div>
                         <div id="box_26"        class="bright box"><span>26</span></div>
                     </div>
                     <div id="area_left">
@@ -207,62 +211,62 @@
                         <div id="box_16"        class="bright box"><span>16</span></div>
 
                         <div id="box_19"        class="bleft box"><span>19</span></div>
-                        <div id="box_blue_1"    class="bcenter box blue"></div>
+                        <div id="box_77"    class="bcenter box blue"></div>
                         <div id="box_15"        class="bright box"><span>15</span></div>
 
                         <div id="box_20"        class="bleft box"><span>20</span></div>
-                        <div id="box_blue_2"    class="bcenter box blue"></div>
+                        <div id="box_78"    class="bcenter box blue"></div>
                         <div id="box_14"        class="bright box"><span>14</span></div>
 
                         <div id="box_21"        class="bleft box"><span>21</span></div>
-                        <div id="box_blue_3"    class="bcenter box blue"></div>
+                        <div id="box_79"    class="bcenter box blue"></div>
                         <div id="box_13"        class="bright box"><span>13</span></div>
 
                         <div id="box_22"        class="bleft box blue secure"><span>22</span></div>
-                        <div id="box_blue_4"    class="bcenter box blue"></div>
-                        <div id="box_12"        class="bright box yellow secure"><span>12</span></div>
+                        <div id="box_80"    class="bcenter box blue"></div>
+                        <div id="box_12"        class="bright box lyellow secure"><span>12</span></div>
 
                         <div id="box_23"        class="bleft box"><span>23</span></div>
-                        <div id="box_blue_5"    class="bcenter box blue"></div>
+                        <div id="box_81"    class="bcenter box blue"></div>
                         <div id="box_11"        class="bright box"><span>11</span></div>
 
                         <div id="box_24"        class="bleft box"><span>24</span></div>
-                        <div id="box_blue_6"    class="bcenter box blue"></div>
+                        <div id="box_82"    class="bcenter box blue"></div>
                         <div id="box_10"        class="bright box"><span>10</span></div>
 
                         <div id="box_25"        class="bleft box"><span>25</span></div>
-                        <div id="box_blue_7"    class="bcenter box blue"></div>
+                        <div id="box_83"    class="bcenter box blue"></div>
                         <div id="box_9"        class="bright box"><span>9</span></div>
                     </div>
                     <div id="area_center">
                         <div class="center_center">
-                            <div class="yellow"></div>
-                            <div class="green"></div>
-                            <div class="blue"></div>
-                            <div class="red"></div>
+                            <div id="box_76" class="box yellow"></div>
+                            <div id="box_100" class="box green"></div>
+                            <div id="box_84" class="box blue"></div>
+                            <div id="box_92" class="box red"></div>
                             <div class="dices"></div>
                         </div>
                     </div>
 
+                    <div class="chip yellow" id="chip_yellow_0"></div>
                     <div class="chip yellow" id="chip_yellow_1"></div>
                     <div class="chip yellow" id="chip_yellow_2"></div>
                     <div class="chip yellow" id="chip_yellow_3"></div>
-                    <div class="chip yellow" id="chip_yellow_4"></div>
                     
-                    <div class="chip blue" id="chip_blue_1"></div>
-                    <div class="chip blue" id="chip_blue_2"></div>
-                    <div class="chip blue" id="chip_blue_3"></div>
-                    <div class="chip blue" id="chip_blue_4"></div>
+                    <div class="chip blue"   id="chip_blue_0"></div>
+                    <div class="chip blue"   id="chip_blue_1"></div>
+                    <div class="chip blue"   id="chip_blue_2"></div>
+                    <div class="chip blue"   id="chip_blue_3"></div>
 
-                    <div class="chip red" id="chip_red_1"></div>
-                    <div class="chip red" id="chip_red_2"></div>
-                    <div class="chip red" id="chip_red_3"></div>
-                    <div class="chip red" id="chip_red_4"></div>
+                    <div class="chip red"    id="chip_red_0"></div>
+                    <div class="chip red"    id="chip_red_1"></div>
+                    <div class="chip red"    id="chip_red_2"></div>
+                    <div class="chip red"    id="chip_red_3"></div>
 
-                    <div class="chip green" id="chip_green_1"></div>
-                    <div class="chip green" id="chip_green_2"></div>
-                    <div class="chip green" id="chip_green_3"></div>
-                    <div class="chip green" id="chip_green_4"></div>
+                    <div class="chip green"  id="chip_green_0"></div>
+                    <div class="chip green"  id="chip_green_1"></div>
+                    <div class="chip green"  id="chip_green_2"></div>
+                    <div class="chip green"  id="chip_green_3"></div>
                 </div>
                 <div id="rooms" style="display:none;" class="row"></div>
             </div>
@@ -306,7 +310,7 @@
             fix_game_size();
             $(window).on("resize", fix_game_size);
 
-            
+
 
             var ROOM_STATUS_EMPTY = <?php print ROOM_STATUS_EMPTY; ?>,
                 ROOM_STATUS_WAITING = <?php print ROOM_STATUS_WAITING; ?>,
@@ -317,7 +321,7 @@
             var socket = io("https://games.sowecms.com:<?php print PARCHIS_PORT; ?>"),
                 players = {},
                 rooms = {},
-                id = {},
+                id,
                 connected = false;
 
             socket.on("connect", function(){
@@ -344,6 +348,218 @@
             /*********************************
              *********************************
              *****   GAME features
+             *********************************
+             *********************************/
+            function Board(players){
+                this.players = players;
+                this.colors = {};
+                this.boxes = {};
+
+                /**
+                 * Adders
+                 */
+                this.add_color = function(color){
+                    this.colors[color.color] = color;
+                }
+                
+                this.add_chip = function(chip){
+                    this.colors[chip.color.color].add_chip(chip);
+                    chip.go_home();
+                }
+
+                this.add_box = function(box){
+                    this.boxes[box.id] = box;
+                }
+
+                /**
+                 * Getters
+                 */
+                this.get_box = function(id){
+                    return this.boxes[id];
+                }
+
+                /**
+                 * Core
+                 */
+                this.build = function(){
+                    this.add_color(new Color("yellow", this, this.players[0],  5, 68, 69,  76, $("#square_yellow")));
+                    this.add_color(new Color("blue",   this, this.players[1], 22, 17, 77,  84, $("#square_blue")));
+                    this.add_color(new Color("red",    this, this.players[2], 39, 34, 85,  92, $("#square_red")));
+                    this.add_color(new Color("green",  this, this.players[3], 56, 51, 93, 100, $("#square_green")));
+
+                    var chips = $(".chip");
+                    for(var i = 0; i < chips.length; i++){
+                        var [type, color, id] = $(chips[i]).attr("id").split("_");
+
+                        this.add_chip(
+                            new Chip(parseInt(id), this.colors[color], this, $(chips[i]))
+                        );
+                    }
+
+                    var boxes = $(".box");
+                    for(var i = 0; i < boxes.length; i++){
+                        
+                        var [type, id] = $(boxes[i]).attr("id").split("_");
+                        this.add_box(
+                            new Box(id, $(boxes[i]))
+                        );
+                    }
+                };
+
+                this.test = function(){
+                    var colors = Object.keys(this.colors);
+                    var ddo = [];
+                    for(var i = 0; i < colors.length; i++){
+                        var chip = this.colors[colors[i]].get_chip(0);
+                        var a = function(){ 
+                            chip.advance(200, a);
+                        }
+                        chip.advance(200, a);
+                    }
+                }
+            }
+
+            function Box(id, domElement){
+                this.id = id;
+                this.element = domElement;
+                this.rotated = this.element.parent().attr('id') == "area_right" || this.element.parent().attr('id') == "area_left";
+
+                this.get_position = function(){
+                    var cOffset = $("#play").offset(),
+                        bOffset = this.element.offset();
+                    return {
+                        x: bOffset.left - cOffset.left + (this.rotated ? this.element.height() : this.element.width())/2,
+                        y: bOffset.top  - cOffset.top  + (this.rotated ? this.element.width()  : this.element.height())/2
+                    };
+                };
+            }
+
+            function Color(color, board, player, initial, breaker, postbreak, finish, domElement){
+                this.color = color;
+
+                this.initial    = initial;
+                this.breaker    = breaker;
+                this.postbreak  = postbreak;
+                this.finish     = finish;
+                
+                this.board = board;
+                this.player = player;
+                this.chips = {};
+
+                this.element = domElement;
+
+                this.add_chip = function(chip){
+                    this.chips[chip.id] = chip;
+                }
+                
+                this.get_chip = function(id){
+                    return this.chips[id];
+                }
+
+                this.get_position = function(){
+                    var top = parseInt(domElement.css("top")),
+                        left = parseInt(domElement.css("left")),
+                        size = 30;
+
+                    return {
+                        top:  (top == 0 ? 0 : 70) + size/2,
+                        left: (left== 0 ? 0 : 70) + size/2
+                    };
+                }
+
+                this.get_next = function(position){
+                    if(position == -1)
+                        return this.initial;
+                    if(position === this.breaker)
+                        return this.postbreak;
+                    if(position == this.finish)
+                        return false;
+                    if(position == 68)
+                        return 1;
+                    return position+1;
+                }
+            }
+
+            function Chip(id, color, board, domElement){
+                this.id = id;
+                this.position = -1;
+                this.color = color;
+                this.board = board;
+                this.element = domElement;
+
+                // statics
+                this.size = 3;
+
+                this.go_home = function(time, callback){
+                    var home = this.color.get_position();
+
+                    switch(this.id){
+                        case 0:
+                            home.top  -= this.size;
+                            home.left -= this.size;
+                            break;
+                        case 1:
+                            home.top  -= this.size;
+                            home.left += this.size;
+                            break;
+                        case 2:
+                            home.top  += this.size;
+                            home.left -= this.size;
+                            break;
+                        case 3:
+                            home.top  += this.size;
+                            home.left += this.size;
+                            break;
+                        default:
+                            console.log("Error: id: '"+ id +"' goto_base");
+                    }
+
+                    if(typeof time === "undefined" || time == 0){
+                        this.element.css({
+                            "top":  home.top + "%",
+                            "left": home.left + "%"
+                        })
+                    }else{
+                        this.element.animate({
+                            "top":  home.top + "%",
+                            "left": home.left + "%"
+                        }, time, callback);
+                    }
+                };
+
+                this.advance = function(time, callback){
+                    var next = this.color.get_next(this.position);
+                    if(next === false)
+                        return;
+                    var pos = this.board.get_box(next).get_position();
+                        move = {
+                            top:  pos.y - this.element.width()/2  + "px",
+                            left: pos.x - this.element.height()/2 + "px"
+                        };
+
+                    if(typeof time === "undefined" || time == 0){
+                        this.element.css(move);
+                    }else{
+                        this.element.animate(move, time, callback);
+                    }
+                    this.position = next;
+
+                }
+            }
+
+
+            function test(){
+                var board = new Board([players[id], {}, {}, {}]);
+                board.build();
+                board.test();
+            }
+
+
+            test();
+
+            /*********************************
+             *********************************
+             *****   READY features
              *********************************
              *********************************/
 

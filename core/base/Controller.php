@@ -2,20 +2,26 @@
 
 namespace Games\Core;
 
+use Games\Core\Room;
 use Games\Core\Player;
 
 class Controller{
     private $io;
     private $logger;
 
+    private $roomClass;
+    private $playerClass;
+
     private $rooms;
     private $players;
 
     private $next_id;
 
-    public function __construct($io, $logger, $roomClass){
+    public function __construct($io, $logger, $roomClass, $playerClass){
         $this->io = $io;
         $this->logger = $logger;
+        $this->roomClass = $roomClass;
+        $this->playerClass = $playerClass;
 
         $this->players = array();
         $this->rooms = array();
@@ -23,7 +29,7 @@ class Controller{
         $this->next_id = 0;
 
         for($i = 1; $i <= PARCHIS_ROOMS; $i++){
-            $this->rooms[$i] = new $roomClass($i, $this, $logger);
+            $this->rooms[$i] = new $this->roomClass($i, $this, $logger);
         }
     }
 
@@ -38,7 +44,7 @@ class Controller{
         }
 
         // @TODO: Auth / unique nickname
-        $socket->player = new Player(++$this->next_id, $data['username'], $socket);
+        $socket->player = new $this->playerClass(++$this->next_id, $data['username'], $socket);
         $this->players[$socket->player->id] = $socket->player;
         
         $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player);
@@ -172,6 +178,19 @@ class Controller{
         $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player .":" . $this->rooms[$socket->player->room]);
         $this->rooms[$socket->player->room]->playerUnready($socket->player);
     }
+    
+    public function onGameAction($socket, $data){
+        if(!isset($this->rooms[$socket->player->room])){
+            $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->player .": Invalid room ". $socket->player->room);
+            return;
+        }
+        if(!isset($data["action"])){
+            $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->player .": Unspecified action ". print_r($data, true));
+            return;
+        }
+        $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player .":" . $this->rooms[$socket->player->room] .":" . print_r($data, true));
+        $this->rooms[$socket->player->room]->onPlayerAction($socket->player, $data);
+    }
 
     /* Async Room Events */
     public function roomJoin($id, $player){
@@ -193,6 +212,7 @@ class Controller{
         else
             $this->io->to("room" . $id)->emit($event);
     }
+
 
     /* Async Updates */
     public function updatePlayer($player){

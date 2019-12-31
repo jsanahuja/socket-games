@@ -18,7 +18,8 @@ use Monolog\ErrorHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
 use Games\Core\Controller;
-use Games\Games\Parchis;
+use Games\Games\Parchis\Room;
+use Games\Games\Parchis\Player;
 
 $io = new SocketIO(PARCHIS_PORT, array(
     'ssl' => array(
@@ -42,7 +43,7 @@ $handler->registerErrorHandler([], false);
 $handler->registerExceptionHandler();
 $handler->registerFatalHandler();
 
-$controller = new Controller($io, $logger, Parchis::class);
+$controller = new Controller($io, $logger, Room::class, Player::class);
 
 $io->on('connection', function($socket) use($io) {
     global $controller;
@@ -71,6 +72,10 @@ $io->on('connection', function($socket) use($io) {
     });
     $socket->on("unready", function() use($socket, $controller){
         $controller->onUnready($socket);
+    });
+
+    $socket->on("action", function($data) use($socket, $controller){
+        $controller->onGameAction($socket, $data);
     });
 });
 
