@@ -35,7 +35,7 @@ class Controller{
 
     public function onConnect($socket, $data){
         if(!isset($data['username'])){
-            $this->logger->error(__FUNCTION__.":".__LINE__ .": No username");
+            $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->conn->remoteAddress .": No username");
             return;
         }
 
@@ -47,7 +47,7 @@ class Controller{
         $socket->player = new $this->playerClass(++$this->next_id, $data['username'], $socket);
         $this->players[$socket->player->id] = $socket->player;
         
-        $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player);
+        $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->conn->remoteAddress .": ". $socket->player);
         $this->io->emit('user_login', $socket->player);
         $socket->emit("data", array(
             "you" => $socket->player->id,
@@ -58,7 +58,7 @@ class Controller{
 
     public function onDisconnect($socket){
         if(!isset($socket->player) || !isset($this->players[$socket->player->id])){
-            $this->logger->error(__FUNCTION__.":".__LINE__ .": Socket had no player");
+            $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->conn->remoteAddress .": Socket had no player");
             return;
         }
 
@@ -66,7 +66,7 @@ class Controller{
             $this->onRoomLeave($socket);
         }
 
-        $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player);
+        $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->conn->remoteAddress .": ". $socket->player);
         $this->io->emit('user_logout', $socket->player);
         unset($this->players[$socket->player->id]);
     }

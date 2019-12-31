@@ -27,37 +27,37 @@ class Board{
             return true;
     }
 
-
     public function can_pre_move($player){
-        foreach($this->player->get_chips() as $chip){
-            $next = $chip->get_color()->get_next($chip->get_position());
+        $color = $player->get_color();
+        $initial = $color->get_initial();
+        foreach($player->get_chips() as $chip){
+            $next = $color->get_next($chip->get_position());
 
-            if(
-                $chip->get_color()->get_initial() != $next &&
-                !$this->is_bridged($next)
-            ){
+            if($initial != $next && !$this->is_bridged($next)){
                 return true;
             }
         }
         return false;
     }
-    
-    public function can_move($player, $dices){
-        $dices[] = array_sum($dices);
 
-        foreach($this->player->get_chips() as $chip){
-            $color = $chip->get_color();
+    public function get_moves($player, $dices){
+        $moves = array();
+        
+        $color = $player->get_color();
+        $dices[] = array_sum($dices);
+        foreach($player->get_chips() as $chip){
             $pos = $chip->get_position();
 
             foreach($dices as $d){
                 if($this->valid_move($chip, $color->jump($pos, $d), array($d))){
-                    return true;
+                    $moves[] = array($chip->get_id(), $to)
                 }
             }
         }
-        return false;
-    }
 
+        return $moves;
+    }
+    
     private function update($chip, $to){
         $id = $chi->get_id();
         $from = $chip->get_position();

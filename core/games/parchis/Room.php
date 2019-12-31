@@ -15,6 +15,10 @@ class Room extends \Games\Core\Room{
     private $double;
     private $dtimes;
 
+    protected function configure(){
+        $this->setNumplayers(4);
+    }
+
     private function assign_player_colors(){
         $colors = [
             Color::$YELLOW,
@@ -89,8 +93,9 @@ class Room extends \Games\Core\Room{
             return;
         }
 
-        if($this->board->can_move($this->turn, $this->dices)){
-            $this->requestMove();
+        $moves = $this->board->get_moves($player, $dices);
+        if(sizeof($moves) > 0){
+            $this->requestMove($moves);
         }else{
             if($this->double){
                 $this->requestThrowDices();
@@ -102,7 +107,7 @@ class Room extends \Games\Core\Room{
     }
 
     public function onChipMove($chip, $to){
-        $dices = $this->board->move($chip, $to, $this->dices);
+        $dices = $this->board->move($this->turn, $chip, $to, $this->dices);
         if($dices === false){
             $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->player .": Invalid move to: ". $to);
             return;
@@ -111,7 +116,17 @@ class Room extends \Games\Core\Room{
         $this->dices = $dices;
 
         if(sizeof($this->dices) > 0){
-            $this->requestMove();
+            $moves = $this->board->get_moves($player, $dices);
+            if(sizeof($moves) > 0){
+                $this->requestMove($moves);
+            }else{                
+                if($this->double){
+                    $this->requestThrowDices();
+                }else{
+                    $this->infoCantMove();
+                    $this->turn();
+                }
+            }
         }else{
             if($this->double){
                 $this->requestThrowDices();
@@ -122,9 +137,6 @@ class Room extends \Games\Core\Room{
     }
 
 
-    protected function configure(){
-        $this->setNumplayers(4);
-    }
 
     protected function start(){
         $this->assign_player_colors();
@@ -155,10 +167,11 @@ class Room extends \Games\Core\Room{
         $this->controller->roomEmit($this->id, "dices", $this->turn->id);
     }
 
-    public function requestMove(){
+    public function requestMove($moves){
         $this->controller->roomEmit($this->id, "move", array(
             "id" => $this->turn->id,
-            "dices" => $this->dices
+            "dices" => $this->dices,
+            "moves" => $moves
         ));
     }
 
@@ -185,7 +198,6 @@ class Room extends \Games\Core\Room{
         }
     }
 
-    
     protected function finish(){
 
     }
