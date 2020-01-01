@@ -2,7 +2,7 @@
 
 namespace Games\Core;
 
-class Player{
+abstract class Player{
     public $id;
     public $username;
     public $room;

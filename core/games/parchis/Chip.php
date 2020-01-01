@@ -5,14 +5,14 @@ namespace Games\Games\Parchis;
 use Games\Games\Parchis\Color;
 
 class Chip{
-    private $id
+    private $id;
     private $color;
     private $position;
 
     public function __construct($id, Color $color, $position = -1){
         $this->id = $id;
         $this->color = $color;
-        $this->position = $position
+        $this->position = $position;
     }
 
     public function get_id(){
@@ -29,5 +29,16 @@ class Chip{
     
     public function get_position(){
         return $this->position;
+    }
+
+    public function serialize(){
+        return array(
+            "id" => $this->id,
+            "position" => $this->position
+        );
+    }
+    
+    public function __toString(){
+        return "c" . $this->id . "-" . $this->color->get_name();
     }
 }

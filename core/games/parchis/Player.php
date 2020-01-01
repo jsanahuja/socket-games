@@ -32,4 +32,16 @@ class Player extends \Games\Core\Player{
             return $this->chips[$id];
         return false;
     }
+
+    public function serialize(){
+        $chips = array();
+        foreach($this->chips as $chip){
+            $chips[$chip->get_id()] = $chip->serialize();
+        }
+        return array(
+            "id" => $this->id,
+            "color" => $this->color->serialize(),
+            "chips" => $chips
+        );
+    }
 }

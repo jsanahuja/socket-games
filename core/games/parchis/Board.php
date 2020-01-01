@@ -30,10 +30,12 @@ class Board{
     public function can_pre_move($player){
         $color = $player->get_color();
         $initial = $color->get_initial();
+
         foreach($player->get_chips() as $chip){
             $next = $color->get_next($chip->get_position());
 
-            if($initial != $next && !$this->is_bridged($next)){
+            // @TODO: Fix premove check
+            if(!$this->is_bridged($next)){
                 return true;
             }
         }
@@ -49,8 +51,9 @@ class Board{
             $pos = $chip->get_position();
 
             foreach($dices as $d){
-                if($this->valid_move($chip, $color->jump($pos, $d), array($d))){
-                    $moves[] = array($chip->get_id(), $to)
+                $to = $color->jump($pos, $d);
+                if($to !== false && $this->valid_move($player, $chip, $to, array($d)) !== false){
+                    $moves[] = array($chip->get_id(), $to);
                 }
             }
         }
@@ -59,7 +62,7 @@ class Board{
     }
     
     private function update($chip, $to){
-        $id = $chi->get_id();
+        $id = $chip->get_id();
         $from = $chip->get_position();
 
         if($from != -1)
@@ -77,7 +80,7 @@ class Board{
     }
 
     public function substract_dices($jumps, $dices){
-        if($req == array_sum($dices))
+        if($jumps == array_sum($dices))
             return array();
         
         unset($dices[array_search($jumps, $dices)]);
@@ -104,18 +107,25 @@ class Board{
     }
 
     public function valid_move($player, $chip, $to, $dices){
-        if(isset($this->map[$to]) && sizeof($this->map[$to]) == 2)
+        if(isset($this->map[$to]) && sizeof($this->map[$to]) == 2){
+            echo "target is full". PHP_EOL;
             return false;
+        }
+
         
         $from = $chip->get_position();
         $color = $chip->get_color();
         $initial = $color->get_initial();
 
-        if(in_array($chip, $this->bridge)
+
+        if(in_array($chip, $this->bridge)){
+            echo "chip in a breaking bridge". PHP_EOL;
             return false;
+        }
 
         if($this->must_break_bridges($player, $dices)){
             if(!$this->is_bridged($from)){
+                echo "chip not in bridge that must be broken" . PHP_EOL;
                 return false;
             }else{
                 $this->tmp_bridge = $this->map[$from];
@@ -124,12 +134,15 @@ class Board{
             $this->tmp_bridge = array();
         }
 
-        if($this->must_take_chip_out($player) && $from != -1 || $to != $initial){
+
+        if($this->must_take_chip_out($player, $dices) && $from != -1 || $to != $initial){
+            echo "chip not at home. Must take out" . PHP_EOL;
             return false;
         }
 
         if($from == -1 && $to == $initial && $this->validate_dices(5, $dices)){
-            return substract_dices(5, $dices);
+            echo "true! taking chip out" . PHP_EOL;
+            return $this->substract_dices(5, $dices);
         }
 
         $jumps = 1;
@@ -137,20 +150,30 @@ class Board{
         $pos = $color->get_next($from);
 
         while($pos != $to){
-            if($jumps > $max_jumps)
+            if($jumps > $max_jumps){
+                echo "max jumps reached" . PHP_EOL;
                 return false;
-            if($this->is_bridged($pos))
+            }
+            if($this->is_bridged($pos)){
+                echo "there was a bridge..." . PHP_EOL;
                 return false;
+            }
             $jumps++;
             $pos = $color->get_next($pos);
         }
 
-        if($this->validate_dices($jumps, $dices))
-            return substract_dices($jumps, $dices);
+        if($this->validate_dices($jumps, $dices)){
+            echo "true! lets f*cking go" . PHP_EOL;
+            return $this->substract_dices($jumps, $dices);
+        }
+        echo "dices are not valid...". PHP_EOL;
         return false;
     }
 
-    public function must_take_chip_out($player){
+    public function must_take_chip_out($player, $dices){
+        if(!$this->validate_dices(5, $dices))
+            return false;
+
         $initial = $player->get_color()->get_initial();
         $chips_initial = 0;
         $chips_home = 0;

@@ -203,7 +203,6 @@ abstract class Room{
 
     abstract protected function finish();
 
-
     public function __toString(){
         return "#" . $this->id;
     }
