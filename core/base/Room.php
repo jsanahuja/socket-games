@@ -30,13 +30,6 @@ abstract class Room{
     }
 
     /**
-     * Room configurations
-     */
-    public function setNumplayers($num){
-        $this->numplayers = $num;
-    }
-
-    /**
      * Room event handlers
      */
     public function join($player){

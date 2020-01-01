@@ -55,10 +55,16 @@
         .gmodal-body .ready-timer{text-align: center;font-size: 2em;}
 
         #game #play{position:relative;margin:10px auto;border-radius:20px;background-color: #FFF;}
-        #game #play #square_yellow {position:absolute;width:30%;height:30%;background:#ffff75;left:0px;top:0px;border-top-left-radius:50%}
-        #game #play #square_green  {position:absolute;width:30%;height:30%;background:#64e064;right:0px;top:0px;border-top-right-radius:50%}
-        #game #play #square_blue   {position:absolute;width:30%;height:30%;background:#3c9cff;left:0px;bottom:0px;border-bottom-left-radius:50%}
-        #game #play #square_red    {position:absolute;width:30%;height:30%;background:#ff4b4b;right:0px;bottom:0px;border-bottom-right-radius:50%}
+        #game #play #square_yellow {position:absolute;width:30%;height:30%;background:#ffff75;left:0px;top:0px;border-bottom-right-radius:6px;}
+        #game #play #square_green  {position:absolute;width:30%;height:30%;background:#64e064;right:0px;top:0px;border-bottom-left-radius:6px;}
+        #game #play #square_blue   {position:absolute;width:30%;height:30%;background:#3c9cff;left:0px;bottom:0px;border-top-right-radius:6px;}
+        #game #play #square_red    {position:absolute;width:30%;height:30%;background:#ff4b4b;right:0px;bottom:0px;border-top-left-radius:6px;}
+
+        #game #play .user{position:absolute;background:#FFF; padding:1em;}
+        #game #play #square_yellow .user{top:0; left:0;}
+        #game #play #square_green  .user{top:0; right:0;}
+        #game #play #square_blue   .user{bottom:0; left:0;}
+        #game #play #square_red    .user{bottom:0; right:0;}
 
         #game #play #area_top       {z-index:3;position:absolute;width:40%;height:34.28571429%;background:#fff;left:30%;top:0;}
         #game #play #area_right     {z-index:3;position:absolute;width:40%;height:34.28571429%;background:#fff;left:100%;top:30%;transform-origin: top left;transform:rotate(90deg);}
@@ -85,6 +91,7 @@
             background-repeat: no-repeat;
             color:#666 !important;
         }
+        #game #play .box.active{cursor:pointer;animation: orangting 1s infinite;transform-origin: center;}
 
         #game #play #area_center  {position:absolute;width:40.1%;height:40.1%;background:#fff;left:29.95%;top:29.95%;}
         #game #play #area_center .center_center {position:absolute;width:100%;height:100%;transform:rotate(45deg);}
@@ -93,22 +100,25 @@
         #game #play #area_center .center_center .blue   {position:absolute;width:50%;height:50%;left:0%;top:50%;}
         #game #play #area_center .center_center .red    {position:absolute;width:50%;height:50%;left:50%;top:50%;}
         #game #play #area_center .center_center .dices  {position:absolute;width:50%;height:50%;left:25%;top:25%;background:#FFF;border-radius:100%;transform:rotate(-45deg);}
-        #game #play #area_center .center_center .dices p{display:none;position: absolute;top: 50%;width: 100%;transform: translate(0, -50%);text-align: center;font-weight: bold;text-transform: uppercase;}
-        #game #play #area_center .center_center .dices div{display:block;position: absolute;width: 25%;height: 25%;top: 50%;transform: translate(-50%, -50%);background-size: 100% 100%;background-repeat: no-repeat;background-position: center center;}
+        #game #play #area_center .center_center .dices div{position: absolute;width: 25%;height: 25%;top: 50%;transform: translate(-50%, -50%);background-size: 100% 100%;background-repeat: no-repeat;background-position: center center;}
         #game #play #area_center .center_center .dices #dice1{left:  25%;transform: translate(-50%, -50%);}
         #game #play #area_center .center_center .dices #dice2{right: 25%;transform: translate( 50%, -50%);}
         #game #play #area_center .center_center .dices.active{cursor:pointer;animation: beating 1s infinite;transform-origin: center;}
 
-        #game #play #area_center .center_center .dices.active p{display:block;}
-        #game #play #area_center .center_center .dices.active div{display:none;}
         
-        #game #play .chip{position: absolute;z-index:10;top: 48.5%;left: 48.5%;height: 3%;width: 3%;border-radius: 100%;box-shadow: 0px 0px 2px 1px #000;}
+        #game #play .chip{position: absolute;display:none;z-index:10;top: 48.5%;left: 48.5%;height: 3%;width: 3%;border-radius: 100%;box-shadow: 0px 0px 2px 1px #000;}
+        #game #play .chip.active{cursor:pointer;animation: beating 1s infinite;transform-origin: center;}
         
         @keyframes beating {
             from { transform: rotate(-45deg); }
             50% { transform: rotate(-45deg) scale(1.1); }
             to { transform: rotate(-45deg); }
         }
+        @keyframes orangting {
+            from {}
+            50% {background: orange;}
+            to {}
+        }        
         </style>
 </head>
 
@@ -117,10 +127,10 @@
         <div class="row">
             <div id="game" class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
                 <div id="play" style="display:none;">
-                    <div id="square_red"></div>
-                    <div id="square_blue"></div>
-                    <div id="square_green"></div>
-                    <div id="square_yellow"></div>
+                    <div id="square_red"><div class="user"><div class="username"></div></div></div>
+                    <div id="square_blue"><div class="user"><div class="username"></div></div></div>
+                    <div id="square_green"><div class="user"><div class="username"></div></div></div>
+                    <div id="square_yellow"><div class="user"><div class="username"></div></div></div>
 
                     <div id="area_top">
                         <div id="box_1"         class="bleft box"><span>1</span></div>
@@ -261,7 +271,6 @@
                             <div id="box_84" class="box blue"></div>
                             <div id="box_92" class="box red"></div>
                             <div class="dices">
-                                <p>Tirar dados</p>
                                 <div id="dice1"></div>
                                 <div id="dice2"></div>
                             </div>
@@ -376,11 +385,36 @@
 
                 this.add_chip = function(chip){
                     this.chips[chip.id] = chip;
-                }
+                };
 
                 this.get_chip = function(id){
                     return this.chips[id];
+                };
+
+                this.get_chips = function(){
+                    return Object.values(this.chips);
                 }
+
+                this.highlight = function(status){
+                    this.color.highlight(status);
+                }
+
+                this.highlight_chips = function(status, moves){
+                    var keys = Object.keys(this.chips);
+                    for(var i = 0; i < keys.length; i++)
+                        this.get_chip(keys[i]).highlight(false);
+                    
+                    if(status){
+                        for(var i = 0; i < moves.length; i++){
+                            this.get_chip(moves[i][0]).highlight(true);
+                        }
+                    }
+                };
+
+                this.render = function(){
+                    this.color.element.find(".username").text(players[this.id].username);
+                };
+                this.render();
             }
 
             function Color(id, name, initial, breaker, postbreak, finish, domElement){
@@ -397,11 +431,12 @@
                 this.get_position = function(){
                     var top = parseInt(this.element.css("top")),
                         left = parseInt(this.element.css("left")),
-                        size = 30;
+                        size = 30,
+                        margin = size/2.5;
 
                     return {
-                        top:  (top == 0 ? 0 : 70) + size/2,
-                        left: (left== 0 ? 0 : 70) + size/2
+                        top:  (top == 0 ? size-margin : 100-size+margin),
+                        left: (left== 0 ? size-margin : 100-size+margin)
                     };
                 };
                 
@@ -415,6 +450,13 @@
                     if(position == 68)
                         return 1;
                     return position+1;
+                };
+
+                this.highlight = function(status){
+                    if(status)
+                        this.element.addClass("active");
+                    else
+                        this.element.removeClass("active");
                 };
             }
 
@@ -463,12 +505,13 @@
                     }
                 };
 
-                this.go_to = function(to, time, callback){
-                    var pos = this.board.get_box_position(to),
+                this.go_to = function(to, side, time, callback){
+                    var pos = this.board.get_box_position(to, side),
                         css = {
-                            top:  pos.y - this.element.width()/2  + "px",
-                            left: pos.x - this.element.height()/2 + "px"
+                            top:  pos.y - this.element.height()/2  + "px",
+                            left: pos.x - this.element.width()/2 + "px"
                         };
+
                     if(typeof time === "undefined" || time == 0){
                         this.element.css(css);
                     }else{
@@ -477,37 +520,43 @@
                     this.position = to;
                 }
 
-                this.move = function(to, cb){
+                this.move = function(to, side, cb){
                     var _that = this, 
                         callback = function(){
                             if(_that.position != to){
+                                var next = _that.color.get_next(_that.position),
+                                    s = (next == to) ? side : false;
                                 _that.go_to(
-                                    _that.color.get_next(_that.position),
+                                    next,
+                                    s,
                                     75,
                                     callback
                                 );
-                                console.log("GOIN", _that.position, to);
                             }else{
-                                console.log("DONE", _that.position, to);
                                 if(typeof cb !== "undefined")
                                     cb();
                             }
                         };
-                    this.go_to(
-                        this.color.get_next(this.position),
-                        75,
-                        callback
-                    );
+                    callback();
                 };
 
-                this.locate = function(){
+                this.highlight = function(status){
+                    if(status){
+                        this.element.addClass("active");
+                    }else{
+                        this.element.removeClass("active");
+                    }
+                };
+
+                this.render = function(){
                     if(this.position == -1)
                         this.go_home();
                     else
                         this.go_to(this.position)
+                    this.element.css("display", "block");
                 };
 
-                this.locate();
+                this.render();
             };
             
             function Board(players){
@@ -520,46 +569,109 @@
                     this.players[player.id] = player;
                 }
 
-                this.get_box_position = function(id){
+                this.get_box_position = function(id, side){
                     var rotated = id >= 9 && id <= 25 || id >= 43 && id <= 59,
                         box = $("#box_"+ id),
                         cOffset = $("#play").offset(),
-                        bOffset = box.offset();
-                    return {
-                        x: bOffset.left - cOffset.left + (rotated ? box.height() : box.width())/2,
-                        y: bOffset.top  - cOffset.top  + (rotated ? box.width()  : box.height())/2
-                    };
+                        bOffset = box.offset(),
+                        width = (rotated ? box.height() : box.width()),
+                        height = (rotated ? box.width()  : box.height()),
+                        pos = {
+                            x: bOffset.left - cOffset.left + width/2,
+                            y: bOffset.top  - cOffset.top  + height/2
+                        };
+
+                    switch(side){
+                        case "left":
+                            pos.x -= width/4;
+                            break;
+                        case "right":
+                            pos.x += width/4;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    return pos;
                 }
 
                 // dices
                 this.request_dices = function(playerid){
                     this.turn = playerid;
                     this.dices = [];
-                    if(this.turn == id)
+                    if(this.turn == id){
                         $(".dices").addClass("active");
+                        console.log("--> dices requested");
+                    }
+                    this.highlight_turn();
                 };
+
+                this.highlight_turn = function(){
+                    var keys = Object.keys(this.players);
+                    for(var i = 0; i < keys.length; i++){
+                        this.players[keys[i]].highlight(this.turn == keys[i]);
+                    }
+                }
+
                 this.throw_dices = function(){
                     if(this.turn == id && this.dices.length == 0){
                         dices();
                         $(".dices").removeClass("active");
                     }
-                }
+                };
+
+                this.info_dices = function(dices){
+                    this.dices = dices;
+                    $("#dice1").removeClass("used");
+                    $("#dice2").removeClass("used");
+                    $("#dice1").css("background-image", "url('/assets/parchis/dice" + dices[0] + ".svg')");
+                    $("#dice2").css("background-image", "url('/assets/parchis/dice" + dices[1] + ".svg')");
+                };
                 
                 // Moves
                 this.dragchip = false;
 
                 this.request_move = function(playerid, dices, moves){
-                    if(this.dices.length == 0){
-                        $("#dice1").css("background-image", "url('/assets/parchis/dice" + dices[0] + ".svg')");
-                        $("#dice2").css("background-image", "url('/assets/parchis/dice" + dices[1] + ".svg')");
+                    switch(dices.length){
+                        case 2:
+                            $("#dice1").removeClass("used");
+                            $("#dice2").removeClass("used");
+                            break;
+                        case 1:
+                            if(dices[0] == this.dices[0]){
+                                $("#dice2").addClass("used");
+                            }else{
+                                $("#dice1").addClass("used");
+                            }
+                        case 0:
+                            $("#dice1").addClass("used");
+                            $("#dice2").addClass("used");
+                            break;
                     }
 
                     this.turn = playerid;
                     if(this.turn == id){
                         this.moves = moves;
-                        this.dices = dices;
+                        this.players[id].highlight_chips(true, this.moves);
+                        console.log("--> move requested", dices);
                     }
-                    console.log(playerid, "Me toca mover");
+                }
+
+                this.highlight_moves = function(status, chip){
+                    $(".box").removeClass("active");
+                    
+                    if(this.turn == id && status){
+                        var [type, color, cid] = chip.attr("id").split("_");
+
+                        if(color != this.players[id].color.name)
+                            return;
+
+                        for(var i = 0; i < this.moves.length; i++){
+                            if(this.moves[i][0] == cid){
+                                $("#box_" + this.moves[i][1]).addClass("active");
+                            }
+                        }
+                    }
                 }
                 
                 this.start_move = function(chip){
@@ -594,6 +706,7 @@
                     for(var i = 0; i < this.moves.length; i++){
                         if(this.moves[i][0] == this.dragchip || this.moves[i][1] == to){
                             move(this.dragchip, to);
+                            this.players[id].highlight_chips(false);
                             console.log("Valid move", this.dragchip, to, this.moves);
                             return;
                         }
@@ -602,11 +715,25 @@
                 }
 
                 this.confirm_move = function(playerid, chipid, box){
-                    this.players[playerid].get_chip(chipid).move(box);
+                    if(playerid == id)
+                        this.players[id].highlight(false);
+                    
+                    var side = false;
+                    var keys = Object.keys(this.players);
+                    for(var i = 0; i < keys.length; i++){
+                        var chips = this.players[keys[i]].get_chips();
+                        for(var j = 0; j < chips.length; j++){
+                            if(chips[j].position == box){
+                                chips[j].move(box, "left");
+                                side = "right"; 
+                            }
+                        }
+                    }
+
+                    this.players[playerid].get_chip(chipid).move(box, side);
                 }
                 
                 // Turn
-
                 this.skip_move = function(playerid){
                     console.log(playerid, "No puedo mover!");
                 };
@@ -660,6 +787,11 @@
             // - dices(playerid)
             socket.on('dices', function(id){
                 board.request_dices(id);
+            });
+
+            // - info_dices(dices)
+            socket.on('info_dices', function(dices){
+                board.info_dices(dices);
             });
 
             // - move(playerid, dices, moves)
@@ -720,11 +852,11 @@
             });
 
             $(".chip").on("mouseover", function(e){
-                // show moves
+                board.highlight_moves(true, $(this));
             });
 
             $(".chip").on("mouseout", function(e){
-                // hide moves
+                board.highlight_moves(false);
             });
 
 

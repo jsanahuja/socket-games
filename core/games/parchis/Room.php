@@ -15,8 +15,6 @@ class Room extends \Games\Core\Room{
 
     private $acks;
     
-    private $original_dices;
-
     private $dices;
     private $doubles;
 
@@ -24,8 +22,7 @@ class Room extends \Games\Core\Room{
         $this->acks = array();
 
         $this->turn = false;
-        $this->setNumplayers(4);
-        $this->original_dices = array();
+        $this->numplayers = 2;
         $this->dices = array();
 
         $this->throw_dices = false;
@@ -48,6 +45,8 @@ class Room extends \Games\Core\Room{
                 new Color(... $colors[$index])
             );
             $index++;
+            if($this->numplayers == 2)
+                $index++;
         }
     }
 
@@ -115,24 +114,21 @@ class Room extends \Games\Core\Room{
             "moves"=> $moves
         ));
 
-        if(sizeof($this->dices) == 0){
-            // No more dices
-            if($this->double){
+        if(sizeof($moves) > 0){
+            // Can move
+            $this->requestMove($moves);
+        }else{
+            // Can't move
+            if(sizeof($this->dices) > 0){
+                $this->infoCantMove();
+            }
+
+            if($this->doubles > 0){
                 // Double => again
                 $this->requestThrowDices();
             }else{
                 // Not double, next turn
                 $this->turn();
-            }
-        }else{
-            // Remaining dices
-            if(sizeof($moves) == 0){
-                // Can't move => next turn
-                $this->infoCantMove();
-                $this->turn();
-            }else{
-                // Can move
-                $this->requestMove($moves);
             }
         }
     }
@@ -153,10 +149,7 @@ class Room extends \Games\Core\Room{
 
         $this->dices = [rand(1,6), rand(1,6)];
         $this->logger->info(__FUNCTION__.":".__LINE__ .":". $this->turn .": throw dices ". $this->dices[0] ."," . $this->dices[1]. " (Doubles: ". $this->doubles .")");
-
-
-        // @TODO: Needed?
-        $this->original_dices = $this->dices;
+        $this->infoDices();
 
         // Doubles
         if($this->dices[0] == $this->dices[1])
@@ -165,6 +158,10 @@ class Room extends \Games\Core\Room{
             $this->doubles = 0;
 
         $this->process();
+    }
+
+    protected function infoDices(){
+        $this->controller->roomEmit($this->id, "info_dices", $this->dices);
     }
 
     /**
@@ -180,14 +177,17 @@ class Room extends \Games\Core\Room{
     }
 
     protected function onChipMove($chip, $to){
-        if(!$this->make_move)
+        if(!$this->make_move){
+            $this->logger->error(__FUNCTION__.":".__LINE__ .":". $this->turn .": Unrequested move ". $chip ." to: ". $to);
             return;
-        $this->make_move = false;
+        }
     
         if(($dices = $this->board->move($this->turn, $chip, $to, $this->dices)) === false){
             $this->logger->error(__FUNCTION__.":".__LINE__ .":". $this->turn .": Invalid move ". $chip ." to: ". $to);
             return;
         }
+        
+        $this->make_move = false;
 
         $this->logger->info(__FUNCTION__.":".__LINE__ .":". $this->turn .": move ". $chip ." to ". $to);
         $this->infoMove($chip);
@@ -288,9 +288,8 @@ class Room extends \Games\Core\Room{
         }
         return array(
             "players" => $players,
-            "turn" => $this->turn->id,
-            "dices" => $this->dices,
-            "original_dices" => $this->original_dices
+            "turn" => $this->turn === false ? false : $this->turn->id,
+            "dices" => $this->dices
         );
     }
 }

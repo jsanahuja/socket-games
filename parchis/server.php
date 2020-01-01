@@ -38,10 +38,10 @@ $formatter = new LineFormatter("[%datetime%]:%level_name%: %message%\n", "Y-m-d\
 $stream = new StreamHandler(LOG_PATH . PARCHIS_LOG, Logger::DEBUG);
 $stream->setFormatter($formatter);
 $logger->pushHandler($stream);
-$handler = new ErrorHandler($logger);
-$handler->registerErrorHandler([], false);
-$handler->registerExceptionHandler();
-$handler->registerFatalHandler();
+// $handler = new ErrorHandler($logger);
+// $handler->registerErrorHandler([], false);
+// $handler->registerExceptionHandler();
+// $handler->registerFatalHandler();
 
 $controller = new Controller($io, $logger, Room::class, Player::class);
 

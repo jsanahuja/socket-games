@@ -18,10 +18,10 @@ class Board{
     private function is_bridged($pos){
         if(!isset($this->map[$pos]))
             return false;
-        if(sizeof($this->map[$to]) != 2)
+        if(sizeof($this->map[$pos]) != 2)
             return false;
 
-        $c = array_values($this->map[$to]);
+        $c = array_values($this->map[$pos]);
 
         if($c[0]->get_color() == $c[1]->get_color())
             return true;
@@ -43,16 +43,22 @@ class Board{
     }
 
     public function get_moves($player, $dices){
+        echo "-- get_moves:" . PHP_EOL;
         $moves = array();
+
+        if(sizeof($dices) == 0)
+            return $moves;
+
+        if(sizeof($dices) == 2)
+            $dices[] = array_sum($dices);
         
         $color = $player->get_color();
-        $dices[] = array_sum($dices);
         foreach($player->get_chips() as $chip){
             $pos = $chip->get_position();
 
             foreach($dices as $d){
                 $to = $color->jump($pos, $d);
-                if($to !== false && $this->valid_move($player, $chip, $to, array($d)) !== false){
+                if($to !== false && $this->valid_move($player, $chip, $to, $dices) !== false){
                     $moves[] = array($chip->get_id(), $to);
                 }
             }
@@ -92,7 +98,6 @@ class Board{
 
         if($move !== false){
             $this->update($chip, $to);
-        }else{
             if(sizeof($this->tmp_bridge) > 0){
                 foreach($this->tmp_bridge as $c){
                     if($chip != $c)
@@ -107,16 +112,15 @@ class Board{
     }
 
     public function valid_move($player, $chip, $to, $dices){
+        echo "---- valid_move: ". $chip->get_position() . " -> ". $to . PHP_EOL;
         if(isset($this->map[$to]) && sizeof($this->map[$to]) == 2){
             echo "target is full". PHP_EOL;
             return false;
         }
 
-        
         $from = $chip->get_position();
         $color = $chip->get_color();
         $initial = $color->get_initial();
-
 
         if(in_array($chip, $this->bridge)){
             echo "chip in a breaking bridge". PHP_EOL;
@@ -135,7 +139,7 @@ class Board{
         }
 
 
-        if($this->must_take_chip_out($player, $dices) && $from != -1 || $to != $initial){
+        if($this->must_take_chip_out($player, $dices) && ($from != -1 || $to != $initial)){
             echo "chip not at home. Must take out" . PHP_EOL;
             return false;
         }
@@ -190,7 +194,7 @@ class Board{
     }
 
     public function must_break_bridges($player, $dices){
-        if(sizeof($dices) != 2)
+        if(sizeof($dices) < 2)
             return false;
 
         $dices = array_values($dices);
