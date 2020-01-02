@@ -14,7 +14,6 @@ class Board{
 
     public function __construct(){
         $this->map = array();
-
         $this->bridge = array();
     }
 
@@ -22,11 +21,11 @@ class Board{
      * Protected methods
      */
     protected function is_bridged($position){
-        if(!isset($this->map[$position]) || sizeof($this->map[$pos]) != 2)
+        if(!isset($this->map[$position]) || sizeof($this->map[$position]) != 2)
             return false;
 
         $chips = array_values($this->map[$position]);
-        return $c[0]->get_color()->equals($c[1]->get_color());
+        return $chips[0]->get_color()->equals($chips[1]->get_color());
     }
 
     protected function valid_dices($jumps, $dices){
@@ -61,6 +60,7 @@ class Board{
         return false;
     }
 
+    // @TODO: Debug to fix issues
     protected function valid_move($player, $chip, $to, $dices){
         $color = $player->get_color();
 
@@ -139,7 +139,12 @@ class Board{
      * Public methods
      */
     public function can_premove($player){
-        return sizeof($this->get_moves($player, array(1,1,1,1,1,1,1,1,1,1,1,1,8))) > 0;
+        return sizeof(
+            $this->get_moves(
+                $player, 
+                array(1,1,1,1,1,1,1,1,1,1,1,1,5,3)
+            )
+        ) > 0;
     }
 
     public function get_moves($player, $dices){

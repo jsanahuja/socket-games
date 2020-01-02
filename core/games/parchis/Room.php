@@ -89,7 +89,7 @@ class Room extends \Games\Core\Room{
         $this->assign_next_turn();
         $this->doubles = 0;
 
-        if($this->board->can_pre_move($this->turn)){
+        if($this->board->can_premove($this->turn)){
             $this->requestThrowDices();
         }else{
             $this->logger->debug("cant premove", $this->turn->serialize());
@@ -188,7 +188,6 @@ class Room extends \Games\Core\Room{
         }
         
         $this->make_move = false;
-
         $this->logger->info(__FUNCTION__.":".__LINE__ .":". $this->turn .": move ". $chip ." to ". $to);
         $this->infoMove($chip);
         $this->dices = $dices;
