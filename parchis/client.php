@@ -37,7 +37,9 @@
         #game::-webkit-scrollbar-thumb:hover {background: #78b9ff;}
         #game::-webkit-scrollbar-track-piece {}
 
-        #game #rooms{}
+        #game #loading .loading{display: inline-block;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);}
+
+        #game #rooms{display:none;}
         #game #rooms .room{padding:0.25em;}
         #game #rooms .room .room-header{
             padding: 0.5em 1em;
@@ -54,36 +56,43 @@
 
         .gmodal-body .ready-timer{text-align: center;font-size: 2em;}
 
-        #game #play{position:relative;margin:10px auto;border-radius:20px;background-color: #FFF;}
-        #game #play #square_yellow {position:absolute;width:30%;height:30%;background:#ffff75;left:0px;top:0px;border-bottom-right-radius:6px;}
-        #game #play #square_green  {position:absolute;width:30%;height:30%;background:#64e064;right:0px;top:0px;border-bottom-left-radius:6px;}
-        #game #play #square_blue   {position:absolute;width:30%;height:30%;background:#3c9cff;left:0px;bottom:0px;border-top-right-radius:6px;}
-        #game #play #square_red    {position:absolute;width:30%;height:30%;background:#ff4b4b;right:0px;bottom:0px;border-top-left-radius:6px;}
+        #game #play{display:none;position:relative;margin:10px auto;border-radius:20px;background-color: #FFF;}
+        #game #play #square_yellow {position:absolute;width:30%;height:30%;background:#dad05f;background: linear-gradient(315deg, #dad05f 0%, #e9dd7f 100%);left:0px;top:0px;border-bottom-right-radius:6px;}
+        #game #play #square_green  {position:absolute;width:30%;height:30%;background:#92c348;background: linear-gradient( 45deg, #92c348 0%, #a0cc6a 100%);right:0px;top:0px;border-bottom-left-radius:6px;}
+        #game #play #square_blue   {position:absolute;width:30%;height:30%;background:#69a5d2;background: linear-gradient(225deg, #69a5d2 0%, #7db2d4 100%);left:0px;bottom:0px;border-top-right-radius:6px;}
+        #game #play #square_red    {position:absolute;width:30%;height:30%;background:#e7413c;background: linear-gradient(135deg, #e7413c 0%, #e99c9b 100%);right:0px;bottom:0px;border-top-left-radius:6px;}
 
-        #game #play .user{position:absolute;background:#FFF; padding:1em;}
+        #game #play .user{display:none;position: absolute;background: #FFF;border: 2px #fff solid;border-radius: 3px;}
+        #game #play .user .profilepic{height: 60px;width: 60px;background: #CCC;display: inline-block;vertical-align: middle;}
+        #game #play .user .username{display: inline-block;padding: 0px 0.5em;}
+
         #game #play #square_yellow .user{top:0; left:0;}
         #game #play #square_green  .user{top:0; right:0;}
         #game #play #square_blue   .user{bottom:0; left:0;}
         #game #play #square_red    .user{bottom:0; right:0;}
 
-        #game #play #area_top       {z-index:3;position:absolute;width:40%;height:34.28571429%;background:#fff;left:30%;top:0;}
-        #game #play #area_right     {z-index:3;position:absolute;width:40%;height:34.28571429%;background:#fff;left:100%;top:30%;transform-origin: top left;transform:rotate(90deg);}
-        #game #play #area_bottom    {z-index:3;position:absolute;width:40%;height:34.28571429%;background:#fff;left:70%;top:100%;transform-origin: top left;transform:rotate(180deg);}
-        #game #play #area_left      {z-index:3;position:absolute;width:40%;height:34.28571429%;background:#fff;left:0%;top:70%;transform-origin: top left;transform:rotate(-90deg);}
+        #game #play #area_top       {z-index:3;position:absolute;width:40%;height:34.28571429%;left:30%;top:0;}
+        #game #play #area_right     {z-index:3;position:absolute;width:40%;height:34.28571429%;left:100%;top:30%;transform-origin: top left;transform:rotate(90deg);}
+        #game #play #area_bottom    {z-index:3;position:absolute;width:40%;height:34.28571429%;left:70%;top:100%;transform-origin: top left;transform:rotate(180deg);}
+        #game #play #area_left      {z-index:3;position:absolute;width:40%;height:34.28571429%;left:0%;top:70%;transform-origin: top left;transform:rotate(-90deg);}
 
-        #game #play .box{float:left;height:12.5%;width:33.3333333%;display:block;}
+        #game #play .box{float:left;height:12.5%;width:33.3333333%;display:block;background:#FFF;}
         #game #play .box.bleft{text-align:right;}
         #game #play .box.bcenter{text-align:center;}
         #game #play .box.bright{text-align:left;}
         #game #play .box span{vertical-align: middle;padding:0 5px;}
-        #game #play .yellow{background:#ffff75;}
-        #game #play .green{background:#64e064;color:#FFF;}
-        #game #play .blue{background:#3c9cff;}
-        #game #play .red{background:#ff4b4b;}
-        #game #play .lyellow{background:#fdfd94;}
-        #game #play .lgreen{background:#b1ffb1;}
-        #game #play .lblue{background:#afd6ff;}
-        #game #play .lred{background:#ffa6a6;}
+        #game #play .yellow{background:#e8ca3f;}
+        #game #play .green{background:#69a63b;}
+        #game #play .blue{background:#4b96bf;}
+        #game #play .red{background:#e7413c;}
+        #game #play .yellow {background:#e8ca3f;background: linear-gradient(315deg, #e8ca3f 0%, #ece698 100%);}
+        #game #play .green  {background:#69a63b;background: linear-gradient(45deg,  #94c44c 0%, #a4d855 100%);}
+        #game #play .blue   {background:#4b96bf;background: linear-gradient(225deg, #4b96bf 0%, #7bb6e2 100%);}
+        #game #play .red    {background:#e7413c;background: linear-gradient(135deg, #e7413c 0%, #ff7672 100%);}
+        #game #play .lyellow{background:#e9dd7f;}
+        #game #play .lgreen{background:#a0cc6a;}
+        #game #play .lblue{background:#7db2d4;}
+        #game #play .lred{background:#e99c9b;}
         #game #play .box.secure{
             background-image: url(/assets/parchis/circle.svg);
             background-size: auto 80%;
@@ -93,26 +102,31 @@
         }
         #game #play .box.active{cursor:pointer;animation: orangting 1s infinite;transform-origin: center;}
 
-        #game #play #area_center  {position:absolute;width:40.1%;height:40.1%;background:#fff;left:29.95%;top:29.95%;}
+        #game #play #area_center  {position:absolute;width:40.1%;height:40.1%;background:#fff;left:29.95%;top:29.95%;overflow:hidden;}
         #game #play #area_center .center_center {position:absolute;width:100%;height:100%;transform:rotate(45deg);}
-        #game #play #area_center .center_center .yellow {position:absolute;width:50%;height:50%;left:0%;top:0%;}
-        #game #play #area_center .center_center .green  {position:absolute;width:50%;height:50%;left:50%;top:0%;}
-        #game #play #area_center .center_center .blue   {position:absolute;width:50%;height:50%;left:0%;top:50%;}
-        #game #play #area_center .center_center .red    {position:absolute;width:50%;height:50%;left:50%;top:50%;}
+        #game #play #area_center .center_center .yellow {position:absolute;width:100%;height:100%;left:-25%;top:-25%;}
+        #game #play #area_center .center_center .green  {position:absolute;width:100%;height:100%;left:50%;top:-50%;}
+        #game #play #area_center .center_center .blue   {position:absolute;width:100%;height:100%;left:-50%;top:50%;}
+        #game #play #area_center .center_center .red    {position:absolute;width:100%;height:100%;left:50%;top:50%;}
         #game #play #area_center .center_center .dices  {position:absolute;width:50%;height:50%;left:25%;top:25%;background:#FFF;border-radius:100%;transform:rotate(-45deg);}
         #game #play #area_center .center_center .dices div{position: absolute;width: 25%;height: 25%;top: 50%;transform: translate(-50%, -50%);background-size: 100% 100%;background-repeat: no-repeat;background-position: center center;}
         #game #play #area_center .center_center .dices #dice1{left:  25%;transform: translate(-50%, -50%);}
         #game #play #area_center .center_center .dices #dice2{right: 25%;transform: translate( 50%, -50%);}
-        #game #play #area_center .center_center .dices.active{cursor:pointer;animation: beating 1s infinite;transform-origin: center;}
+        #game #play #area_center .center_center .dices.active{cursor:pointer;animation: dicesbeating 1s infinite;transform-origin: center;}
 
         
         #game #play .chip{position: absolute;display:none;z-index:10;top: 48.5%;left: 48.5%;height: 3%;width: 3%;border-radius: 100%;box-shadow: 0px 0px 2px 1px #000;}
-        #game #play .chip.active{cursor:pointer;animation: beating 1s infinite;transform-origin: center;}
+        #game #play .chip.active{cursor:pointer;animation: chipbeating 1s infinite;transform-origin: center;}
         
-        @keyframes beating {
+        @keyframes dicesbeating {
             from { transform: rotate(-45deg); }
             50% { transform: rotate(-45deg) scale(1.1); }
             to { transform: rotate(-45deg); }
+        }
+        @keyframes chipbeating {
+            from {}
+            50% { transform: scale(1.2); }
+            to {}
         }
         @keyframes orangting {
             from {}
@@ -126,11 +140,17 @@
     <div class="container-fluid">
         <div class="row">
             <div id="game" class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
-                <div id="play" style="display:none;">
-                    <div id="square_red"><div class="user"><div class="username"></div></div></div>
-                    <div id="square_blue"><div class="user"><div class="username"></div></div></div>
-                    <div id="square_green"><div class="user"><div class="username"></div></div></div>
-                    <div id="square_yellow"><div class="user"><div class="username"></div></div></div>
+                <div id="loading" class="row">
+                    <div class="loading">
+                        <img src="/assets/images/loading.svg" alt="Spinner loading" />
+                        <p>Conectado con el servidor...</p>
+                    </div>
+                </div>
+                <div id="play">
+                    <div id="square_red"><div class="user"><div class="profilepic"></div><span class="username"></span></div></div>
+                    <div id="square_blue"><div class="user"><div class="profilepic"></div><span class="username"></span></div></div>
+                    <div id="square_green"><div class="user"><div class="profilepic"></div><span class="username"></span></div></div>
+                    <div id="square_yellow"><div class="user"><div class="profilepic"></div><span class="username"></span></div></div>
 
                     <div id="area_top">
                         <div id="box_1"         class="bleft box"><span>1</span></div>
@@ -413,6 +433,7 @@
 
                 this.render = function(){
                     this.color.element.find(".username").text(players[this.id].username);
+                    this.color.element.find(".user").show();
                 };
                 this.render();
             }
@@ -569,31 +590,36 @@
                     this.players[player.id] = player;
                 }
 
-                this.get_box_position = function(id, side){
-                    var rotated = id >= 9 && id <= 25 || id >= 43 && id <= 59,
-                        box = $("#box_"+ id),
+                this.get_box_position = function(bid, side){
+                    var rotated = bid >= 9 && bid <= 25 || bid >= 43 && bid <= 59,
+                        box = $("#box_"+ bid),
                         cOffset = $("#play").offset(),
-                        bOffset = box.offset(),
-                        width = (rotated ? box.height() : box.width()),
-                        height = (rotated ? box.width()  : box.height()),
-                        pos = {
-                            x: bOffset.left - cOffset.left + width/2,
-                            y: bOffset.top  - cOffset.top  + height/2
+                        bOffset = box.offset();
+                    console.log(cOffset, bOffset, $("#play"), box, "#box_"+ bid, bid); 
+                    var pos = {
+                            x: bOffset.left - cOffset.left + (rotated ? box.height() : box.width())/2,
+                            y: bOffset.top  - cOffset.top  + (rotated ? box.width()  : box.height())/2
                         };
 
                     switch(side){
                         case "left":
-                            pos.x -= width/4;
+                            if(rotated)
+                                pos.y -= $(".chip").width() * 0.65;
+                            else
+                                pos.x -= $(".chip").width() * 0.65;
                             break;
                         case "right":
-                            pos.x += width/4;
+                            if(rotated)
+                                pos.y += $(".chip").width() * 0.65;
+                            else
+                                pos.x += $(".chip").width() * 0.65;
                             break;
                         default:
                             break;
                     }
 
                     return pos;
-                }
+                };
 
                 // dices
                 this.request_dices = function(playerid){
@@ -691,13 +717,10 @@
                 }
 
                 this.make_move = function(box){
-                    console.log("make_move:",this.turn, id);
                     if(this.turn != id){
-                        console.log("make_move:no_turn");
                         return false;
                     }
                     if(!this.dragchip){
-                        console.log("make_move:no_chip");
                         return false;
                     }
 
@@ -706,30 +729,27 @@
                     for(var i = 0; i < this.moves.length; i++){
                         if(this.moves[i][0] == this.dragchip || this.moves[i][1] == to){
                             move(this.dragchip, to);
-                            this.players[id].highlight_chips(false);
-                            console.log("Valid move", this.dragchip, to, this.moves);
                             return;
                         }
                     }
-                    console.log("Invalid move", this.dragchip, to, this.moves);
                 }
 
                 this.confirm_move = function(playerid, chipid, box){
-                    if(playerid == id)
+                    if(playerid == id){
+                        this.players[id].highlight_chips(false);
                         this.players[id].highlight(false);
+                    }
                     
                     var side = false;
-                    var keys = Object.keys(this.players);
-                    for(var i = 0; i < keys.length; i++){
-                        var chips = this.players[keys[i]].get_chips();
-                        for(var j = 0; j < chips.length; j++){
-                            if(chips[j].position == box){
-                                chips[j].move(box, "left");
-                                side = "right"; 
+                    $.each(this.players, function(pid, player){
+                        $.each(player.get_chips(), function(cid, chip){
+                            if(chip.position == box){
+                                chip.go_to(chip.position, "left");
+                                side = "right";
+                                console.log(true, chip.position, box);
                             }
-                        }
-                    }
-
+                        })
+                    });
                     this.players[playerid].get_chip(chipid).move(box, side);
                 }
                 
@@ -860,21 +880,6 @@
             });
 
 
-
-
-                // this.test = function(){
-                //     var colors = Object.keys(this.colors);
-                //     var ddo = [];
-                //     for(var i = 0; i < colors.length; i++){
-                //         var chip = this.colors[colors[i]].get_chip(0);
-                //         var a = function(){ 
-                //             chip.advance(200, a);
-                //         }
-                //         chip.advance(200, a);
-                //     }
-                // }
-
-
             /*********************************
              *********************************
              *****   READY features
@@ -960,7 +965,9 @@
                 for(var i = 0; i < keys.length; i++){
                     render_player(keys[i]);
                 }
-                    
+                $("#loading").hide();
+                $("#rooms").css("display", "flex");
+
                 //@TODO: Remove
                 setTimeout(function(){
                     $(".join_room[data-room=\"2\"]").trigger("click");
