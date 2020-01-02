@@ -67,6 +67,10 @@ class Color{
         return $this->initial;
     }
 
+    public function equals($color){
+        return $this->id == $color->get_id();
+    }
+
     public function serialize(){
         return array(
             "id" => $this->id,
