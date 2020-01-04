@@ -86,7 +86,7 @@ class Board{
         return false;
     }
 
-    // @TODO: Debug to fix issues
+    // @TODO: Remove debug
     protected function valid_move($player, $chip, $to, $dices){
         fwrite(STDERR, "Move ".$chip->get_position()." -> ". $to . PHP_EOL);
         $color = $player->get_color();

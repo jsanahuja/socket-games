@@ -188,8 +188,10 @@ class Controller{
             $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->player .": Unspecified action ". print_r($data, true));
             return;
         }
-        $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player .":" . $this->rooms[$socket->player->room] .":" . print_r($data, true));
-        $this->rooms[$socket->player->room]->onPlayerAction($socket->player, $data);
+        
+        if(!$this->rooms[$socket->player->room]->onPlayerAction($socket->player, $data)){
+            $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player .":" . $this->rooms[$socket->player->room] .": Bad action ". print_r($data, true));
+        }
     }
 
     /* Async Room Events */

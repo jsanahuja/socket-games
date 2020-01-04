@@ -368,7 +368,11 @@
                 players = {},
                 rooms = {},
                 id,
-                connected = false;
+                connected = false,
+                audio = {
+                    dices: new Audio('/assets/parchis/dices.mp3'),
+                    chip: new Audio('/assets/parchis/chip.mp3'),
+                };
 
             socket.on("connect", function(){
                 if(connected)
@@ -643,12 +647,16 @@
 
                 this.throw_dices = function(){
                     if(this.turn == id && this.dices.length == 0){
+                        audio.dices.play();
                         dices();
                         $(".dices").removeClass("active");
                     }
                 };
 
                 this.info_dices = function(dices){
+                    if(this.turn != id){
+                        audio.dices.play();
+                    }
                     this.dices = dices;
                     $("#dice1").removeClass("used");
                     $("#dice2").removeClass("used");
@@ -683,7 +691,7 @@
                         this.players[id].highlight_chips(true, this.moves);
                         console.log("--> move requested", dices);
                         // @TODO remove. do first move available
-                        // move(moves[0][0], moves[0][1]);
+                        move(moves[0][0], moves[0][1]);
                     }
                 }
 
@@ -754,7 +762,9 @@
                             }
                         })
                     });
-                    this.players[playerid].get_chip(chipid).move(box, side);
+                    this.players[playerid].get_chip(chipid).move(box, side, function(){
+                        audio.chip.play();
+                    });
                 }
                 
                 // Turn

@@ -2,8 +2,7 @@
     "require": {
         "workerman/phpsocket.io": "^1.1",
         "psr/log": "^1.1",
-        "monolog/monolog": "^2.0",
-        "phpunit/phpunit": "^8.5"
+        "monolog/monolog": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -11,5 +10,8 @@
             "Games\\Games\\": "core/games"
         },
         "files": [ "core/globals.php" ]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.5"
     }
 }

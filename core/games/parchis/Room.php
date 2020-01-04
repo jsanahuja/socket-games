@@ -245,9 +245,10 @@ class Room extends \Games\Core\Room{
                 $this->onACK($player, $data["event"]);
                 break;
             default:
-                $this->logger->error(__FUNCTION__.":".__LINE__ .":". $player .": Undefined action ". print_r($data, true));
+                return false;
                 break;
         }
+        return true;
     }
 
     protected function infoPlay(){
