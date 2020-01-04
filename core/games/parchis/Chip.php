@@ -22,6 +22,10 @@ class Chip
         return $this->id;
     }
 
+    public function get_uuid(){
+        return $this->color->get_name() . $this->get_id();
+    }
+
     public function get_color()
     {
         return $this->color;

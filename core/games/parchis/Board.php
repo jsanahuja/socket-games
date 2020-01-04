@@ -226,7 +226,7 @@ class Board
         $from = $chip->get_position();
 
         if ($from != -1) {
-            unset($this->map[$from][$id]);
+            unset($this->map[$from][$chip->get_uuid()]);
         }
 
         if ($position != -1) {
@@ -234,7 +234,7 @@ class Board
                 $this->map[$position] = array();
             }
 
-            $this->map[$position][$id] = $chip;
+            $this->map[$position][$chip->get_uuid()] = $chip;
         }
 
         $chip->set_position($position);
