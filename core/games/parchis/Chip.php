@@ -32,7 +32,7 @@ class Chip{
     }
 
     public function equals($chip){
-        return $this->id == $chip->get_id && $this->color->equals($chip->get_color());
+        return $this->id == $chip->get_id() && $this->color->equals($chip->get_color());
     }
 
     public function serialize(){

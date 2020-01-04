@@ -9,6 +9,12 @@ class Player extends \Games\Core\Player{
     private $color;
     private $chips;
 
+    public function __construct($id, $username, $socket){
+        super($id, $username, $socket);
+        
+        $this->chips = array();
+    }
+
     public function set_color(Color $color){
         $this->color = $color;
     }
@@ -18,8 +24,6 @@ class Player extends \Games\Core\Player{
     }
 
     public function add_chip(Chip $chip){
-        if(gettype($this->chips) != "array")
-            $this->chips = [];
         $this->chips[$chip->get_id()] = $chip;
     }
 
@@ -28,9 +32,7 @@ class Player extends \Games\Core\Player{
     }
 
     public function get_chip($id){
-        if(isset($this->chips[$id]))
-            return $this->chips[$id];
-        return false;
+        return $this->chips[$id];
     }
 
     public function serialize(){
