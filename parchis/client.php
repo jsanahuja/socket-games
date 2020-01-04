@@ -628,6 +628,8 @@
                     if(this.turn == id){
                         $(".dices").addClass("active");
                         console.log("--> dices requested");
+                        // @TODO: remove
+                        this.throw_dices();
                     }
                     this.highlight_turn();
                 };
@@ -680,6 +682,8 @@
                         this.moves = moves;
                         this.players[id].highlight_chips(true, this.moves);
                         console.log("--> move requested", dices);
+                        // @TODO remove. do first move available
+                        // move(moves[0][0], moves[0][1]);
                     }
                 }
 

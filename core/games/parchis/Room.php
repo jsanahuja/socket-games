@@ -226,11 +226,16 @@ class Room extends \Games\Core\Room{
                     $this->logger->error(__FUNCTION__.":".__LINE__ .":". $player .": Not his turn ". print_r($data, true));
                     return;
                 }
-                if(!isset($data["id"]) || !isset($data["to"]) || ($chip = $player->get_chip($data["id"])) === false){
+                if(
+                    !isset($data["id"]) || 
+                    !isset($data["to"]) || 
+                    (!is_string($data["id"]) && !is_int($data["id"])) ||
+                    (!is_string($data["to"]) && !is_int($data["to"]))
+                ){
                     $this->logger->error(__FUNCTION__.":".__LINE__ .":". $player .": Invalid move ". print_r($data, true));
                     return;
                 }
-                $this->onChipMove($chip, $data["to"]);
+                $this->onChipMove($player->get_chip($data["id"]), $data["to"]);
                 break;
             case "ack":
                 if(!isset($data["event"]) || !isset($this->acks[$data["event"]])){
