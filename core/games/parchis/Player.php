@@ -9,8 +9,8 @@ class Player extends \Games\Core\Player{
     private $color;
     private $chips;
 
-    public function __construct($id, $username, $socket){
-        super($id, $username, $socket);
+    public function __construct(int $id, string $username, $socket){
+        parent::__construct($id, $username, $socket);
         
         $this->chips = array();
     }
@@ -31,7 +31,7 @@ class Player extends \Games\Core\Player{
         return $this->chips;
     }
 
-    public function get_chip($id){
+    public function get_chip(int $id){
         return $this->chips[$id];
     }
 

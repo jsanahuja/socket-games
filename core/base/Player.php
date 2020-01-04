@@ -8,7 +8,7 @@ abstract class Player{
     public $room;
     private $socket;
 
-    public function __construct($id, $username, $socket){
+    public function __construct(int $id, string $username, $socket){
         $this->id = $id;
         $this->username = $username;
         $this->room = null;

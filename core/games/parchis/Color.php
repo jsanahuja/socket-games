@@ -25,7 +25,7 @@ class Color{
     }
 
     public function get_id(){
-        return $id;
+        return $this->id;
     }
 
     public function get_name(){
