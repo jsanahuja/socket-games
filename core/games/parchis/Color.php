@@ -67,6 +67,18 @@ class Color{
         return $this->initial;
     }
 
+    public function get_breaker(){
+        return $this->breaker;
+    }
+    
+    public function get_postbreak(){
+        return $this->postbreak;
+    }
+
+    public function get_finish(){
+        return $this->finish;
+    }
+
     public function equals($color){
         return $this->id == $color->get_id();
     }

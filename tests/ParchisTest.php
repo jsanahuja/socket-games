@@ -213,6 +213,7 @@ class BoardTest extends TestCase
         );
     }
 
+    /** @test */
     public function test_valid_move4(){
         $this->board->virtual_move($this->players[0]->get_chip(0), 5);
         $this->board->virtual_move($this->players[0]->get_chip(1), 5);
@@ -340,6 +341,18 @@ class BoardTest extends TestCase
                 ),
                 [5]
             )
+        );
+    }
+    
+    /** @test */
+    public function test_get_moves(){
+        $this->board->virtual_move($this->players[2]->get_chip(0), 45);
+        
+        $this->assertEquals(
+            $this->board->get_moves(
+                $this->players[2], 
+                [5,5]
+            ), [[1,39], [2,39], [3,39]]
         );
     }
 }

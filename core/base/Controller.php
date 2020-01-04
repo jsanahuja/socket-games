@@ -188,8 +188,7 @@ class Controller{
             $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->player .": Unspecified action ". print_r($data, true));
             return;
         }
-        
-        if(!$this->rooms[$socket->player->room]->onPlayerAction($socket->player, $data)){
+        if($this->rooms[$socket->player->room]->onPlayerAction($socket->player, $data) === false){
             $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player .":" . $this->rooms[$socket->player->room] .": Bad action ". print_r($data, true));
         }
     }
@@ -208,7 +207,7 @@ class Controller{
             $this->logger->error(__FUNCTION__.":".__LINE__ .": Invalid room ". $this->rooms[$id] ." for ". $event);
             return;
         }
-        $this->logger->info(__FUNCTION__.":".__LINE__ .":". $this->rooms[$id] .":".$event);
+        // $this->logger->info(__FUNCTION__.":".__LINE__ .":". $this->rooms[$id] .":".$event);
         if($data !== null)
             $this->io->to("room" . $id)->emit($event, $data);
         else

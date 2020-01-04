@@ -100,19 +100,20 @@ class Room extends \Games\Core\Room{
 
     protected function process(){
         if($this->doubles == 3){
-            // @TODO: Die? last moved
+            $killed = $this->board->kill_last_moved();
+            if($killed !== false)
+                $this->infoDie($chip);
             $this->infoMaxDoubles();
             $this->turn();
             return;
         }
-
         
         // Moves
         $moves = $this->board->get_moves($this->turn, $this->dices);
-        print_r(array(
+        fwrite(STDERR, print_r(array(
             "dices"=> $this->dices,
             "moves"=> $moves
-        ));
+        ), true).  PHP_EOL);
 
         if(sizeof($moves) > 0){
             // Can move
@@ -182,16 +183,42 @@ class Room extends \Games\Core\Room{
             return;
         }
     
+        $kill = $this->board->check_kill($chip, $to);
         if(($dices = $this->board->move($this->turn, $chip, $to, $this->dices)) === false){
             $this->logger->error(__FUNCTION__.":".__LINE__ .":". $this->turn .": Invalid move ". $chip ." to: ". $to);
             return;
         }
         
         $this->make_move = false;
+
         $this->logger->info(__FUNCTION__.":".__LINE__ .":". $this->turn .": move ". $chip ." to ". $to);
         $this->infoMove($chip);
-        $this->dices = $dices;
 
+        if($kill !== false){
+            $this->board->kill($kill);
+            $this->infoDie($kill);
+            $dices[] = 20;
+        }
+
+        $finish = $this->turn->get_color()->get_finish();
+        if($to == $finish){
+            $dices[] = 10;
+
+            $winner = true;
+            foreach($this->turn->get_chips() as $c){
+                if($c->get_position() != $finish){
+                    $winner = false;
+                    break;
+                }
+            }
+
+            if($winner){
+                $this->logger->info(__FUNCTION__.":".__LINE__ .":". $this->turn .": won the game");
+                return;
+            }
+        }
+
+        $this->dices = $dices;
         $this->process();
     }
     
@@ -200,6 +227,24 @@ class Room extends \Games\Core\Room{
             "id"   => $this->turn->id,
             "chip" => $chip->get_id(),
             "to"  => $chip->get_position()
+        ));
+    }
+
+    protected function infoDie($chip){
+        // @TODO: Use ig
+        foreach($this->players as $player){
+            if($player->get_color()->equals($chip->get_color())){
+                $targetPlayer = $player;
+            }
+        }
+        if(!isset($targetPlayer)){
+            $this->logger->error(__FUNCTION__.":".__LINE__ .":". $this->turn .": Cannot find player of chip ". $chip);
+            return;
+        }
+        
+        $this->controller->roomEmit($this->id, "info_die", array(
+            "id"   => $targetPlayer->id,
+            "chip" => $chip->get_id()
         ));
     }
 
@@ -248,7 +293,6 @@ class Room extends \Games\Core\Room{
                 return false;
                 break;
         }
-        return true;
     }
 
     protected function infoPlay(){

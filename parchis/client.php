@@ -89,6 +89,10 @@
         #game #play .green  {background:#69a63b;background: linear-gradient(45deg,  #94c44c 0%, #a4d855 100%);}
         #game #play .blue   {background:#4b96bf;background: linear-gradient(225deg, #4b96bf 0%, #7bb6e2 100%);}
         #game #play .red    {background:#e7413c;background: linear-gradient(135deg, #e7413c 0%, #ff7672 100%);}
+        #game #play .secure.yellow {background:#e8ca3f;}
+        #game #play .secure.green  {background:#94c44c;}
+        #game #play .secure.blue   {background:#4b96bf;}
+        #game #play .secure.red    {background:#e7413c;}
         #game #play .lyellow{background:#e9dd7f;}
         #game #play .lgreen{background:#a0cc6a;}
         #game #play .lblue{background:#7db2d4;}
@@ -385,13 +389,13 @@
             });
 
             socket.emit("login", {
-                // "username": prompt("Username")
-                "username": "<?php 
+                // @TODO: Authentication
+                "username": <?php 
                     if(isset($_GET['user']))
-                        print $_GET['user'];
+                        print '"'. $_GET['user'] .'"';
                     else 
-                        print 'BanNsS1'; 
-                    ?>"
+                        print 'prompt("Username")'; 
+                    ?>
             });
 
 
@@ -464,6 +468,49 @@
                         left: (left== 0 ? size-margin : 100-size+margin)
                     };
                 };
+
+                this.get_finish_position = function(index){
+                    var pos = {
+                        top: $("#area_center").offset().top   - $("#play").offset().top  + $("#area_center").height()/2 - $(".chip").width()/2,
+                        left: $("#area_center").offset().left - $("#play").offset().left + $("#area_center").width()/2  - $(".chip").height()/2
+                    };
+
+                    var margin = 0;
+                    switch(index){
+                        case 0:
+                            margin -= $(".chip").width() * 1.7;
+                            break;
+                        case 1:
+                            margin -= $(".chip").width() * 0.6;
+                            break;
+                        case 2:
+                            margin += $(".chip").width() * 0.6;
+                            break;
+                        case 3:
+                            margin += $(".chip").width() * 1.7;
+                            break;
+                    }
+
+                    switch(this.id){
+                        case 0:
+                            pos.top -= $(".dices").height()/2 + $(".chip").height()*1.05;
+                            pos.left += margin;
+                            break;
+                        case 1:
+                            pos.left -= $(".dices").width()/2 + $(".chip").width()*1.05;
+                            pos.top += margin;
+                            break;
+                        case 2:
+                            pos.top += $(".dices").height()/2 + $(".chip").height()*1.05;
+                            pos.left += margin;
+                            break;
+                        case 3:
+                            pos.left += $(".dices").width()/2 + $(".chip").width()*1.05;
+                            pos.top += margin;
+                            break;
+                    }
+                    return pos;
+                }
                 
                 this.get_next = function(position){
                     if(position == -1)
@@ -514,7 +561,7 @@
                             home.left += size;
                             break;
                         default:
-                            console.log("Error: id: '"+ this.id +"' goto_base");
+                            console.log("Error: id: '"+ this.id +"' go_home");
                     }
 
                     if(typeof time === "undefined" || time == 0){
@@ -531,38 +578,45 @@
                 };
 
                 this.go_to = function(to, side, time, callback){
-                    var pos = this.board.get_box_position(to, side),
-                        css = {
-                            top:  pos.y - this.element.height()/2  + "px",
-                            left: pos.x - this.element.width()/2 + "px"
-                        };
+                    var css;
+                    if(to == this.color.finish){
+                        css = this.color.get_finish_position(this.id);
+                    }else{
+                        css = this.board.get_box_position(to, side);
+                    }
 
                     if(typeof time === "undefined" || time == 0){
                         this.element.css(css);
                     }else{
-                        this.element.animate(css, time, callback);
+                        this.element.animate(css, time, callback).delay(10);
                     }
                     this.position = to;
                 }
 
-                this.move = function(to, side, cb){
-                    var _that = this, 
-                        callback = function(){
-                            if(_that.position != to){
-                                var next = _that.color.get_next(_that.position),
-                                    s = (next == to) ? side : false;
-                                _that.go_to(
-                                    next,
-                                    s,
-                                    75,
-                                    callback
-                                );
-                            }else{
-                                if(typeof cb !== "undefined")
-                                    cb();
-                            }
-                        };
-                    callback();
+                this.move = function(to, side, callback){
+                    if(to == -1){
+                        this.position = -1;
+                        this.go_home(500, callback);
+                        return ;
+                    }
+
+                    var from = this.position;
+                    while(true){
+                        // console.log({
+                        //     color: this.color.name, 
+                        //     id: this.id, 
+                        //     from: from,
+                        //     pos: this.position,
+                        //     to: to
+                        // });
+                        this.position = this.color.get_next(this.position);
+                        if(this.position == to){
+                            this.go_to(this.position, side, 75);
+                            break;
+                        }else{
+                            this.go_to(this.position, false, 75, callback);
+                        }
+                    }
                 };
 
                 this.highlight = function(status){
@@ -574,10 +628,7 @@
                 };
 
                 this.render = function(){
-                    if(this.position == -1)
-                        this.go_home();
-                    else
-                        this.go_to(this.position)
+                    this.move(this.position);
                     this.element.css("display", "block");
                 };
 
@@ -597,26 +648,23 @@
                 this.get_box_position = function(bid, side){
                     var rotated = bid >= 9 && bid <= 25 || bid >= 43 && bid <= 59,
                         box = $("#box_"+ bid),
-                        cOffset = $("#play").offset(),
-                        bOffset = box.offset();
-                    console.log(cOffset, bOffset, $("#play"), box, "#box_"+ bid, bid); 
-                    var pos = {
-                            x: bOffset.left - cOffset.left + (rotated ? box.height() : box.width())/2,
-                            y: bOffset.top  - cOffset.top  + (rotated ? box.width()  : box.height())/2
+                        pos = {
+                            left: box.offset().left - $("#play").offset().left + (rotated ? box.height() : box.width())/2  - $(".chip").width()/2,
+                            top:  box.offset().top  - $("#play").offset().top  + (rotated ? box.width()  : box.height())/2 - $(".chip").height()/2
                         };
 
                     switch(side){
                         case "left":
                             if(rotated)
-                                pos.y -= $(".chip").width() * 0.65;
+                                pos.top -= $(".chip").width() * 0.65;
                             else
-                                pos.x -= $(".chip").width() * 0.65;
+                                pos.left -= $(".chip").width() * 0.65;
                             break;
                         case "right":
                             if(rotated)
-                                pos.y += $(".chip").width() * 0.65;
+                                pos.top += $(".chip").width() * 0.65;
                             else
-                                pos.x += $(".chip").width() * 0.65;
+                                pos.left += $(".chip").width() * 0.65;
                             break;
                         default:
                             break;
@@ -631,7 +679,6 @@
                     this.dices = [];
                     if(this.turn == id){
                         $(".dices").addClass("active");
-                        console.log("--> dices requested");
                         // @TODO: remove
                         this.throw_dices();
                     }
@@ -689,9 +736,10 @@
                     if(this.turn == id){
                         this.moves = moves;
                         this.players[id].highlight_chips(true, this.moves);
-                        console.log("--> move requested", dices);
                         // @TODO remove. do first move available
-                        move(moves[0][0], moves[0][1]);
+                        // setTimeout(function(){
+                            move(moves[0][0], moves[0][1]);
+                        // }, 500);
                     }
                 }
 
@@ -746,25 +794,33 @@
                     }
                 }
 
-                this.confirm_move = function(playerid, chipid, box){
+                this.confirm_move = function(playerid, chipid, to){
                     if(playerid == id){
                         this.players[id].highlight_chips(false);
                         this.players[id].highlight(false);
                     }
                     
-                    var side = false;
+                    var chip = this.players[playerid].get_chip(chipid),
+                        from = chip.position,
+                        side = false;
+                    
                     $.each(this.players, function(pid, player){
                         $.each(player.get_chips(), function(cid, chip){
-                            if(chip.position == box){
+                            if(chip.position == to && to != -1){
                                 chip.go_to(chip.position, "left");
                                 side = "right";
-                                console.log(true, chip.position, box);
+                            }else if(chip.position == from && from != -1){
+                                chip.go_to(from, false);
                             }
                         })
                     });
-                    this.players[playerid].get_chip(chipid).move(box, side, function(){
+                    this.players[playerid].get_chip(chipid).move(to, side, function(){
                         audio.chip.play();
                     });
+                }
+
+                this.confirm_die = function(playerid, chipid){
+                    this.players[playerid].get_chip(chipid).move(-1);
                 }
                 
                 // Turn
@@ -782,7 +838,6 @@
 
             // - play(data)
             socket.on('play', function(data){
-                console.log(data);
                 board = new Board();
 
                 var keys = Object.keys(data.players);
@@ -846,6 +901,10 @@
             // - info_move(playerid, chipid, to)
             socket.on('info_move', function(data){
                 board.confirm_move(data.id, data.chip, data.to);
+            });
+
+            socket.on('info_die', function(data){
+                board.confirm_die(data.id, data.chip);
             });
             
             // - ack(evt)
@@ -1050,22 +1109,17 @@
                     players = data.players;
                     rooms = data.rooms;
                     render();
-                }else{
-                    console.log("NO data?!");
                 }
-                console.log(data, "---->", id);
             });
 
             socket.on("update_player", function(player){
                 players[player.id] = player;
                 render_player(player.id);
-                console.log("UP Player ", player);
             });
             
             socket.on("update_room", function(room){
                 rooms[room.id] = room;
                 render_room(room.id);
-                console.log("UP Room", room);
             });
 
             /*********************************
@@ -1152,7 +1206,6 @@
 
             // Receive messages
             socket.on("message", function (data) {
-                console.log(data);
                 if (typeof data.chat !== "undefined" && typeof data.username !== "undefined" && typeof data.msg !== "undefined") {
                     
                     var chat_window = $('.chat-window[data-nav="' + data.chat + '"]');

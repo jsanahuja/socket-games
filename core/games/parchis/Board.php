@@ -2,14 +2,18 @@
 
 namespace Games\Games\Parchis;
 
+use Games\Games\Parchis\Chip;
+
 class Board{
     protected $map;
 
+    protected $last_moved;
     protected $tmp_bridge;
     protected $bridge;
 
-    protected static $secure = array(
+    protected static $SECURE = array(
         5, 12, 17, 22, 29, 34, 39, 46, 51, 56, 63, 68
+
     );
 
     public static $FINALES = [76, 84, 92, 100];
@@ -36,7 +40,15 @@ class Board{
         return $chips[0]->get_color()->equals($chips[1]->get_color());
     }
 
+    protected function is_secure($position){
+        return in_array($position, self::$SECURE) || $position >= 69;
+    }
+
     protected function valid_dices($jumps, $dices){
+        if(in_array(10, $dices) && $jumps != 10)
+            return false;
+        if(in_array(20, $dices) && $jumps != 20)
+            return false;
         return in_array($jumps, $dices) || $jumps == array_sum($dices);
     }
 
@@ -63,7 +75,6 @@ class Board{
                     )
                 )
             ){
-                fwrite(STDERR, "YES: MUST BREAK BRIDGE" . PHP_EOL);
                 return true;
             }
         }
@@ -133,7 +144,7 @@ class Board{
         }
     }
 
-    public function physical_valid_move($chip, $to, $dices){
+    protected function physical_valid_move($chip, $to, $dices){
         $position = $chip->get_position();
         $color = $chip->get_color();
 
@@ -191,16 +202,52 @@ class Board{
         }
     }
 
+    protected function update($chip, $position){
+        $id = $chip->get_id();
+        $from = $chip->get_position();
+
+        if($from != -1){
+            unset($this->map[$from][$id]);
+        }
+
+        if($position != -1){
+            if(!isset($this->map[$position])){
+                $this->map[$position] = array();
+            }
+
+            $this->map[$position][$id] = $chip;
+        }
+
+        $chip->set_position($position);
+    }
+
     /**
      * Public methods
      */
     public function can_premove($player){
-        return sizeof(
-            $this->get_moves(
-                $player, 
-                array(1,1,1,1,1,1,1,1,1,1,1,1,5,3)
-            )
-        ) > 0;
+        return (sizeof($this->get_moves($player, [1,1])) +
+                sizeof($this->get_moves($player, [1,2])) +
+                sizeof($this->get_moves($player, [1,3])) +
+                sizeof($this->get_moves($player, [1,4])) +
+                sizeof($this->get_moves($player, [1,5])) +
+                sizeof($this->get_moves($player, [1,6])) +
+                sizeof($this->get_moves($player, [2,2])) +
+                sizeof($this->get_moves($player, [2,3])) +
+                sizeof($this->get_moves($player, [2,4])) +
+                sizeof($this->get_moves($player, [2,5])) +
+                sizeof($this->get_moves($player, [2,6])) +
+                sizeof($this->get_moves($player, [3,3])) +
+                sizeof($this->get_moves($player, [3,4])) +
+                sizeof($this->get_moves($player, [3,5])) +
+                sizeof($this->get_moves($player, [3,6])) +
+                sizeof($this->get_moves($player, [4,4])) +
+                sizeof($this->get_moves($player, [4,5])) +
+                sizeof($this->get_moves($player, [4,6])) +
+                sizeof($this->get_moves($player, [5,5])) +
+                sizeof($this->get_moves($player, [5,6])) +
+                sizeof($this->get_moves($player, [6,6])) +
+                sizeof($this->get_moves($player, [3,3]))
+	           ) > 0;
     }
 
     public function get_moves($player, $dices){
@@ -209,18 +256,24 @@ class Board{
         if(sizeof($dices) == 0)
             return $moves;
 
-        if(sizeof($dices) == 2)
-            $dices[] = array_sum($dices);
+        // @TODO: Remove
+        if(sizeof($dices) > 2)
+            throw new \Exception("More than 2 dices? Something is wrong:" . print_r($dices, true));
+
+
+        $jumps = $dices;
+        if(sizeof($jumps) == 2)
+            $jumps[] = array_sum($jumps);
         
         foreach($player->get_chips() as $chip){
-            foreach($dices as $dice){
+            foreach($jumps as $dice){
                 if(($to = $player->get_color()->jump($chip->get_position(), $dice)) === false)
                     continue;
 
-                print "----" . $chip->get_id() . " --> ". $to ." (". $dice .")". PHP_EOL;
                 if($to !== false && $this->valid_move($player, $chip, $to, $dices) !== false){
-                    print "OK". PHP_EOL;
-                    $moves[] = array($chip->get_id(), $to);
+                    $move = array($chip->get_id(), $to);
+                    if(!in_array($move, $moves))
+                        $moves[] = $move;
                 }
             }
         }
@@ -233,17 +286,7 @@ class Board{
 
         if($jumps !== false){
 
-            $id = $chip->get_id();
-            $from = $chip->get_position();
-    
-            if($from != -1){
-                unset($this->map[$from][$id]);
-            }
-            if(!isset($this->map[$to])){
-                $this->map[$to] = array();
-            }
-            $this->map[$to][$id] = $chip;
-            $chip->set_position($to);
+            $this->update($chip, $to);
     
             // Bridge
             if(sizeof($this->tmp_bridge) > 0){
@@ -258,8 +301,43 @@ class Board{
                 
             unset($dices[array_search($jumps, $dices)]);
             return array_values($dices);
+
+            // Last move
+            $this->last_moved = $chip;
         }
         return false;
     }
 
+    public function check_kill($chip, $to){
+        $color = $chip->get_color();
+        $initial = $color->get_initial();
+
+        if($this->is_secure($to)){
+            if($to == $initial && $this->is_full($to)){
+                $toKill = false;
+                foreach($this->map[$to] as $target){
+                    if(!$target->get_color()->equals($color))
+                        $toKill = $target;
+                }
+                return $toKill;
+            }
+        }else if(isset($this->map[$to]) && sizeof($this->map[$to]) == 1){
+            $target = end($this->map[$to]);
+            if(!$target->get_color()->equals($color))
+                return $target;
+        }
+        return false;
+    }
+
+    public function kill_last_moved(){
+        if($this->last_moved instanceof Chip && !$this->is_secure($this->last_moved->get_position())){
+            $this->kill($this->last_moved);
+            return $this->last_moved;
+        }else
+            return false;
+    }
+
+    public function kill($chip){
+        $this->update($chip, -1);
+    }
 }
