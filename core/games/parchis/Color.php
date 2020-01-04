@@ -2,7 +2,8 @@
 
 namespace Games\Games\Parchis;
 
-class Color{
+class Color
+{
     public static $YELLOW = [0, "yellow",  5, 68, 69,  76];
     public static $BLUE =   [1, "blue",   22, 17, 77,  84];
     public static $RED =    [2, "red",    39, 34, 85,  92];
@@ -15,7 +16,8 @@ class Color{
     private $postbreak;
     private $finish;
 
-    public function __construct($id, $name, $initial, $breaker, $postbreak, $finish){
+    public function __construct($id, $name, $initial, $breaker, $postbreak, $finish)
+    {
         $this->id        = $id;
         $this->name      = $name;
         $this->initial   = $initial;
@@ -24,16 +26,19 @@ class Color{
         $this->finish    = $finish;
     }
 
-    public function get_id(){
+    public function get_id()
+    {
         return $this->id;
     }
 
-    public function get_name(){
+    public function get_name()
+    {
         return $this->name;
     }
 
-    public function get_next($position){
-        switch($position){
+    public function get_next($position)
+    {
+        switch ($position) {
             case -1:
                 return $this->initial;
             case $this->breaker:
@@ -48,42 +53,50 @@ class Color{
         }
     }
 
-    public function jump($position, $jump){
-        if($position == -1){
-            if($jump == 5)
+    public function jump($position, $jump)
+    {
+        if ($position == -1) {
+            if ($jump == 5) {
                 return $this->initial;
-            else
+            } else {
                 return false;
+            }
         }
 
-        while($jump != 0){
+        while ($jump != 0) {
             $position = $this->get_next($position);
             $jump--;
         }
         return $position;
     }
 
-    public function get_initial(){
+    public function get_initial()
+    {
         return $this->initial;
     }
 
-    public function get_breaker(){
+    public function get_breaker()
+    {
         return $this->breaker;
     }
     
-    public function get_postbreak(){
+    public function get_postbreak()
+    {
         return $this->postbreak;
     }
 
-    public function get_finish(){
+    public function get_finish()
+    {
         return $this->finish;
     }
 
-    public function equals($color){
+    public function equals($color)
+    {
         return $this->id == $color->get_id();
     }
 
-    public function serialize(){
+    public function serialize()
+    {
         return array(
             "id" => $this->id,
             "name" => $this->name,

@@ -40,36 +40,36 @@ $logger->pushHandler($stream);
 
 $controller = new Controller($io, $logger, Room::class, Player::class);
 
-$io->on('connection', function($socket) use($io) {
+$io->on('connection', function ($socket) use ($io) {
     global $controller;
 
-    $socket->on("login", function($data) use($socket, $controller){
+    $socket->on("login", function ($data) use ($socket, $controller) {
         $controller->onConnect($socket, $data);
     });
-    $socket->on("disconnect", function() use($socket, $controller){
+    $socket->on("disconnect", function () use ($socket, $controller) {
         $controller->onDisconnect($socket);
     });
-    $socket->on("message", function($data) use($socket, $controller){
+    $socket->on("message", function ($data) use ($socket, $controller) {
         $controller->onMessage($socket, $data);
     });
-    $socket->on("room_leave", function() use($socket, $controller){
+    $socket->on("room_leave", function () use ($socket, $controller) {
         $controller->onRoomLeave($socket);
     });
-    $socket->on("room_join", function($data) use($socket, $controller){
+    $socket->on("room_join", function ($data) use ($socket, $controller) {
         $controller->onRoomJoin($socket, $data);
     });
-    $socket->on("room_spectate", function($data) use($socket, $controller){
+    $socket->on("room_spectate", function ($data) use ($socket, $controller) {
         $controller->onRoomSpectate($socket, $data);
     });
 
-    $socket->on("ready", function() use($socket, $controller){
+    $socket->on("ready", function () use ($socket, $controller) {
         $controller->onReady($socket);
     });
-    $socket->on("unready", function() use($socket, $controller){
+    $socket->on("unready", function () use ($socket, $controller) {
         $controller->onUnready($socket);
     });
 
-    $socket->on("action", function($data) use($socket, $controller){
+    $socket->on("action", function ($data) use ($socket, $controller) {
         $controller->onGameAction($socket, $data);
     });
 });

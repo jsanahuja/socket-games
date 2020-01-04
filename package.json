@@ -1,0 +1,17 @@
+{
+  "standardx": {
+    "globals": ["jQuery", "gModal"]
+  },
+  "eslintConfig": {
+    "rules": {
+      "indent": ["error", 4],
+      "space-before-function-paren": ["error", {
+        "anonymous": "never",
+        "named": "never"
+      }],
+      "semi": [2, "always"],
+      "max-len": ["error", { "code": 100 }],
+      "eqeqeq": ["error", "allow-null"]
+    }
+  }
+}

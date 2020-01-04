@@ -9,16 +9,18 @@ use Games\Games\Parchis\Chip;
 use Games\Games\Parchis\Player;
 use Games\Games\Parchis\Color;
 
-class BoardMock extends Board{
-    public function virtual_move($chip, $to){
+class BoardMock extends Board
+{
+    public function virtual_move($chip, $to)
+    {
         $id = $chip->get_id();
         $from = $chip->get_position();
 
-        if($from != -1){
+        if ($from != -1) {
             unset($this->map[$from][$id]);
         }
 
-        if(!isset($this->map[$to])){
+        if (!isset($this->map[$to])) {
             $this->map[$to] = array();
         }
         
@@ -26,7 +28,8 @@ class BoardMock extends Board{
         $chip->set_position($to);
     }
 
-    public function public_valid_move($player, $chip, $to, $dices){
+    public function public_valid_move($player, $chip, $to, $dices)
+    {
         return $this->valid_move($player, $chip, $to, $dices);
     }
 }
@@ -36,8 +39,8 @@ class BoardMock extends Board{
  */
 class BoardTest extends TestCase
 {
-    protected  $players;
-    protected  $board;
+    protected $players;
+    protected $board;
 
     // public static function setUpBeforeClass(){}
 
@@ -52,11 +55,11 @@ class BoardTest extends TestCase
             Color::$GREEN
         ];
 
-        for($i = 0; $i < 4; $i++){
+        for ($i = 0; $i < 4; $i++) {
             $player = new Player($i, "User". $i, null);
             $player->set_color(new Color(... $colors[$i]));
 
-            for($j = 0; $j < 4; $j++){
+            for ($j = 0; $j < 4; $j++) {
                 $player->add_chip(new Chip($j, $player->get_color()));
             }
             $this->players[$i] = $player;
@@ -67,7 +70,8 @@ class BoardTest extends TestCase
 
 
     /** @test */
-    public function test_valid_move(){
+    public function test_valid_move()
+    {
         $this->board->virtual_move($this->players[0]->get_chip(0), 5);
         $this->board->virtual_move($this->players[0]->get_chip(1), 5);
         $this->board->virtual_move($this->players[0]->get_chip(2), 23);
@@ -81,7 +85,9 @@ class BoardTest extends TestCase
                     5
                 ),
                 [5,6]
-            ), false);
+            ),
+            false
+        );
         $this->assertNotEquals(
             $this->board->public_valid_move(
                 $this->players[0],
@@ -91,11 +97,14 @@ class BoardTest extends TestCase
                     6
                 ),
                 [5,6]
-            ), false);
+            ),
+            false
+        );
     }
 
     /** @test */
-    public function test_valid_move2(){
+    public function test_valid_move2()
+    {
         $this->board->virtual_move($this->players[0]->get_chip(0), 23);
         $this->board->virtual_move($this->players[0]->get_chip(1), 23);
         
@@ -124,7 +133,8 @@ class BoardTest extends TestCase
                     5
                 ),
                 [5,5]
-            ), false
+            ),
+            false
         );
 
         // Bidge makes our bridge cant be broken
@@ -138,7 +148,8 @@ class BoardTest extends TestCase
                 $this->players[0]->get_chip(2),
                 $this->players[0]->get_color()->get_initial(),
                 [5,5]
-            ), false
+            ),
+            false
         );
         $this->assertNotEquals(
             $this->board->public_valid_move(
@@ -146,7 +157,8 @@ class BoardTest extends TestCase
                 $this->players[0]->get_chip(3),
                 $this->players[0]->get_color()->get_initial(),
                 [5,5]
-            ), false
+            ),
+            false
         );
         $this->assertFalse(
             $this->board->public_valid_move(
@@ -162,7 +174,8 @@ class BoardTest extends TestCase
     }
 
     /** @test */
-    public function test_valid_move3(){
+    public function test_valid_move3()
+    {
         $this->board->virtual_move($this->players[0]->get_chip(0), 5);
         $this->board->virtual_move($this->players[0]->get_chip(1), 5);
         
@@ -201,7 +214,8 @@ class BoardTest extends TestCase
                 $this->players[0]->get_chip(2),
                 $this->players[0]->get_color()->get_initial(),
                 [5,5]
-            ), false
+            ),
+            false
         );
         $this->assertFalse(
             $this->board->public_valid_move(
@@ -209,12 +223,14 @@ class BoardTest extends TestCase
                 $this->players[0]->get_chip(3),
                 $this->players[0]->get_color()->get_initial(),
                 [5,5]
-            ), false
+            ),
+            false
         );
     }
 
     /** @test */
-    public function test_valid_move4(){
+    public function test_valid_move4()
+    {
         $this->board->virtual_move($this->players[0]->get_chip(0), 5);
         $this->board->virtual_move($this->players[0]->get_chip(1), 5);
 
@@ -228,7 +244,8 @@ class BoardTest extends TestCase
                     5
                 ),
                 [5,5]
-            ), false
+            ),
+            false
         );
         $this->assertNotEquals(
             $this->board->public_valid_move(
@@ -239,7 +256,8 @@ class BoardTest extends TestCase
                     5
                 ),
                 [5,5]
-            ), false
+            ),
+            false
         );
         // Cant take chip out
         $this->assertFalse(
@@ -269,7 +287,8 @@ class BoardTest extends TestCase
                     5
                 ),
                 [5,5]
-            ), [5]
+            ),
+            [5]
         );
 
         // Can't move again => must take chip out
@@ -303,7 +322,8 @@ class BoardTest extends TestCase
                 $this->players[0]->get_chip(2),
                 $this->players[0]->get_color()->get_initial(),
                 [5]
-            ), false
+            ),
+            false
         );
         $this->assertNotEquals(
             $this->board->public_valid_move(
@@ -311,7 +331,8 @@ class BoardTest extends TestCase
                 $this->players[0]->get_chip(3),
                 $this->players[0]->get_color()->get_initial(),
                 [5]
-            ), false
+            ),
+            false
         );
 
         // -- Virtually tanking chips out --
@@ -328,7 +349,8 @@ class BoardTest extends TestCase
                     5
                 ),
                 [5]
-            ), false
+            ),
+            false
         );
         // Cant move => is in breaking bridge
         $this->assertFalse(
@@ -345,14 +367,16 @@ class BoardTest extends TestCase
     }
     
     /** @test */
-    public function test_get_moves(){
+    public function test_get_moves()
+    {
         $this->board->virtual_move($this->players[2]->get_chip(0), 45);
         
         $this->assertEquals(
             $this->board->get_moves(
-                $this->players[2], 
+                $this->players[2],
                 [5,5]
-            ), [[1,39], [2,39], [3,39]]
+            ),
+            [[1,39], [2,39], [3,39]]
         );
     }
 }

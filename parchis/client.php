@@ -680,7 +680,7 @@
                     if(this.turn == id){
                         $(".dices").addClass("active");
                         // @TODO: remove
-                        this.throw_dices();
+                        // this.throw_dices();
                     }
                     this.highlight_turn();
                 };
@@ -738,7 +738,7 @@
                         this.players[id].highlight_chips(true, this.moves);
                         // @TODO remove. do first move available
                         // setTimeout(function(){
-                            move(moves[0][0], moves[0][1]);
+                            // move(moves[0][0], moves[0][1]);
                         // }, 500);
                     }
                 }
@@ -999,9 +999,9 @@
                         }, 1000);
 
                         // @TODO: Remove
-                        setTimeout(function(){
-                            $("#gmodal-wrapper-" + readyModal.id + " .gmodal-button.gmodal-button-blue").trigger("click");
-                        }, 500);
+                        // setTimeout(function(){
+                            // $("#gmodal-wrapper-" + readyModal.id + " .gmodal-button.gmodal-button-blue").trigger("click");
+                        // }, 500);
                     },
                 });
                 readyModal.show();
@@ -1042,9 +1042,9 @@
                 $("#rooms").css("display", "flex");
 
                 //@TODO: Remove
-                setTimeout(function(){
-                    $(".join_room[data-room=\"2\"]").trigger("click");
-                }, 500);
+                // setTimeout(function(){
+                //     $(".join_room[data-room=\"2\"]").trigger("click");
+                // }, 500);
             }
 
             function render_room(rid){
