@@ -17,14 +17,14 @@ class BoardMock extends Board
         $from = $chip->get_position();
 
         if ($from != -1) {
-            unset($this->map[$from][$id]);
+            unset($this->map[$from][$chip->get_uuid()]);
         }
 
         if (!isset($this->map[$to])) {
             $this->map[$to] = array();
         }
         
-        $this->map[$to][$id] = $chip;
+        $this->map[$to][$chip->get_uuid()] = $chip;
         $chip->set_position($to);
     }
 
@@ -303,6 +303,7 @@ class BoardTest extends TestCase
                 [5]
             )
         );
+        
         // Cant move => is in breaking bridge
         $this->assertFalse(
             $this->board->public_valid_move(

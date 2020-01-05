@@ -38,6 +38,7 @@ class Board
     protected function is_bridged($position)
     {
         if (!$this->is_full($position)) {
+            fwrite(STDERR, "-- $position Not full". PHP_EOL);
             return false;
         }
 
@@ -222,7 +223,6 @@ class Board
 
     protected function update($chip, $position)
     {
-        $id = $chip->get_id();
         $from = $chip->get_position();
 
         if ($from != -1) {
