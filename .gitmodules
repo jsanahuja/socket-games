@@ -1,0 +1,3 @@
+[submodule "assets/gModal"]
+	path = assets/gModal
+	url = https://github.com/jsanahuja/gModal.git
