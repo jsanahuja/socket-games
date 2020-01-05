@@ -53,10 +53,10 @@ class Board
 
     protected function valid_dices($jumps, $dices)
     {
-        if (in_array(10, $dices) && $jumps != 10) {
+        if (in_array(10, $dices) && $jumps < 10) {
             return false;
         }
-        if (in_array(20, $dices) && $jumps != 20) {
+        if (in_array(20, $dices) && $jumps < 20) {
             return false;
         }
         return in_array($jumps, $dices) || $jumps == array_sum($dices);
