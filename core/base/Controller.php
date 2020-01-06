@@ -40,8 +40,8 @@ class Controller implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            "players" => $this->rooms->jsonSerialize(),
-            "rooms" => $this->players->jsonSerialize()
+            "players" => $this->players->jsonSerialize(),
+            "rooms" => $this->rooms->jsonSerialize()
         ];
     }
 
