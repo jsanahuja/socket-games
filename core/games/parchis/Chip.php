@@ -4,7 +4,7 @@ namespace Games\Games\Parchis;
 
 use Games\Games\Parchis\Color;
 
-class Chip
+class Chip implements Mapable
 {
     private $id;
     private $color;
@@ -41,18 +41,23 @@ class Chip
     {
         return $this->position;
     }
-
-    public function equals($chip)
-    {
-        return $this->id == $chip->get_id() && $this->color->equals($chip->get_color());
+    
+    public function equals(Comparable $object){
+        return get_class($this) === get_class($object) && 
+               $this->id === $object->getId() && 
+               $this->color->equals($chip->get_color());
+    }
+    
+    public function jsonSerialize(){
+        return $this->gameSerialize();
     }
 
-    public function serialize()
+    public function gameSerialize()
     {
-        return array(
+        return [
             "id" => $this->id,
             "position" => $this->position
-        );
+        ];
     }
     
     public function __toString()

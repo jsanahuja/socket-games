@@ -36,18 +36,11 @@ class Room extends \Games\Core\Room
      */
     private function assign_player_colors()
     {
-        $colors = [
-            Color::$YELLOW,
-            Color::$BLUE,
-            Color::$RED,
-            Color::$GREEN
-        ];
         $index = 0;
-        foreach ($this->players as $player) {
-            $player->set_color(
-                new Color(... $colors[$index])
-            );
-            $index++;
+        foreach($this->players as $player){
+            $player->set_color(new Color(... Color::$COLORS[$index++]));
+            
+            // Make 1v1 in opposite sides
             if ($this->numplayers == 2) {
                 $index++;
             }
@@ -70,26 +63,13 @@ class Room extends \Games\Core\Room
      */
     private function assign_next_turn()
     {
+        // First turn
         if ($this->turn === false) {
-            $this->turn = array_values($this->players)[rand(0, $this->numplayers-1)];
+            $this->turn = $this->players->values()[rand(0, sizeof($this->players))];
             return;
         }
 
-        $next = false;
-
-        if ($this->turn == end($this->players)) {
-            $next = true;
-        }
-
-        foreach ($this->players as $player) {
-            if ($next) {
-                $this->turn = $player;
-                break;
-            }
-            if ($player == $this->turn) {
-                $next = true;
-            }
-        }
+        $this->turn = $this->players->next($this->turn);
     }
 
     public function turn()
@@ -318,7 +298,7 @@ class Room extends \Games\Core\Room
 
     protected function infoPlay()
     {
-        $this->controller->roomEmit($this->id, "play", $this->serialize());
+        $this->controller->roomEmit($this->id, "play", $this->jsonSerializeFull());
     }
 
     protected function infoCantMove()
@@ -355,14 +335,10 @@ class Room extends \Games\Core\Room
     /**
      * Serialization
      */
-    public function serialize()
+    public function gameSerialize()
     {
-        $players = array();
-        foreach ($this->players as $player) {
-            $players[$player->id] = $player->serialize();
-        }
         return array(
-            "players" => $players,
+            "players" => $this->players->gameSerialize(),
             "turn" => $this->turn === false ? false : $this->turn->id,
             "dices" => $this->dices
         );

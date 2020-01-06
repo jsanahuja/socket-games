@@ -43,7 +43,7 @@ $controller = new Controller($io, $logger, Room::class, Player::class);
 $io->on('connection', function ($socket) use ($io) {
     global $controller;
 
-    $socket->on("login", function ($data) use ($socket, $controller) {
+    $socket->on("auth", function ($data) use ($socket, $controller) {
         $controller->onConnect($socket, $data);
     });
     $socket->on("disconnect", function () use ($socket, $controller) {
@@ -52,13 +52,14 @@ $io->on('connection', function ($socket) use ($io) {
     $socket->on("message", function ($data) use ($socket, $controller) {
         $controller->onMessage($socket, $data);
     });
-    $socket->on("room_leave", function () use ($socket, $controller) {
+    
+    $socket->on("leave", function () use ($socket, $controller) {
         $controller->onRoomLeave($socket);
     });
-    $socket->on("room_join", function ($data) use ($socket, $controller) {
+    $socket->on("join", function ($data) use ($socket, $controller) {
         $controller->onRoomJoin($socket, $data);
     });
-    $socket->on("room_spectate", function ($data) use ($socket, $controller) {
+    $socket->on("spectate", function ($data) use ($socket, $controller) {
         $controller->onRoomSpectate($socket, $data);
     });
 

@@ -3,108 +3,157 @@
 namespace Games\Core;
 
 use Games\Core\Controller;
+use Games\Core\Player;
+use Games\Utils\Mapping;
+use Games\Utils\Mapable;
+use Games\Utils\Comparable;
+
 use Workerman\Lib\Timer;
 use Monolog\Logger;
 
-abstract class Room
+abstract class Room implements Mapable
 {
-    public $id;
-    public $status;
-    public $numplayers;
+    protected $id;
+    protected $status;
+    protected $numplayers;
 
-    private $ready;
-    public $players;
-    public $spectators;
+    protected $ready;
+    protected $players;
+    protected $spectators;
 
     protected $controller;
     protected $logger;
 
+    const READY_TIME = 10;
+    const STATUS_EMPTY = 0;
+    const STATUS_WAITING = 1;
+    const STATUS_READY = 2;
+    const STATUS_PLAYING = 3;
+
     public function __construct($id, Controller $controller, Logger $logger)
     {
         $this->id = $id;
-        $this->status = ROOM_STATUS_EMPTY;
+        $this->status = self::STATUS_EMPTY;
 
-        $this->players = array();
-        $this->spectators = array();
+        $this->players = new Mapping();
+        $this->spectators = new Mapping();
 
         $this->controller = $controller;
         $this->logger = $logger;
     }
 
+    public function jsonSerialize(){
+        return [
+            "id" => $this->id,
+            "players" => $this->players->keys(),
+            "spectators" => $this->spectators->keys(),
+            "status" => $this->status,
+            "numplayers" => $this->numplayers
+        ];
+    }
+    
+    abstract public function gameSerialize();
+
+    public function equals(Comparable $object){
+        return get_class($this) === get_class($object) && $this->id === $object->getId();
+    }
+
+    public function getId(){
+        return $this->id;
+    }
+
+    /**
+     * Helpers
+     */
+    public function isEmpty(){
+        return $this->status === self::STATUS_EMPTY;
+    }
+
+    public function isWaiting(){
+        return $this->status === self::STATUS_WAITING;
+    }
+
+    public function isReady(){
+        return $this->status === self::STATUS_READY;
+    }
+
+    public function isPlaying(){
+        return $this->status === self::STATUS_PLAYING;
+    }
+
     /**
      * Room event handlers
      */
-    public function join($player)
+    public function join(Player $player)
     {
-        if ($this->status != ROOM_STATUS_EMPTY && $this->status != ROOM_STATUS_WAITING) {
+        if($this->isReady() || $this->isPlaying() || sizeof($this->players) == $this->numplayers){
             return false;
         }
 
-        if ($this->status == ROOM_STATUS_WAITING && $this->numplayers <= sizeof($this->players)) {
+        if($this->players->contains($player)){
             return false;
         }
 
-        $this->players[] = $player;
-        $this->controller->roomJoin($this->id, $player);
+        $this->players->add($player);
 
         if (sizeof($this->players) == $this->numplayers) {
-            $this->setStatus(ROOM_STATUS_READY);
+            $this->setStatus(self::STATUS_READY);
         } else {
-            $this->setStatus(ROOM_STATUS_WAITING);
+            $this->setStatus(self::STATUS_WAITING);
         }
 
         return true;
     }
 
-    public function leave($player)
+    public function leave(Player $player)
     {
-        $index = array_search($player, $this->players);
-        if ($index !== false) {
-            unset($this->players[$index]);
-            $this->controller->roomLeave($this->id, $player);
-        }
-        
-        $index = array_search($player, $this->spectators);
-        if ($index !== false) {
-            unset($this->spectators[$index]);
+        if($this->players->contains($player)){
+            $this->players->remove($player);
+
+            if($this->isPlaying() && sizeof($this->players) == 0){
+                $this->setStatus(self::STATUS_EMPTY);
+            }else if($this->isReady() && sizeof($this->players) < $this->numplayers){
+                $this->setStatus(STATUS_WAITING);
+                $this->controller->roomEmit($this, "unready");
+            }else if(sizeof($this->players) > 0){
+                $this->setStatus(STATUS_WAITING);
+            } else {
+                $this->setStatus(STATUS_EMPTY);
+            }
+
+            return true;
         }
 
-        if ($this->status === ROOM_STATUS_PLAYING) {
-            if (sizeof($this->players) == 0) {
-                $this->setStatus(ROOM_STATUS_EMPTY);
-            }
-        } elseif ($this->status === ROOM_STATUS_READY) {
-            if (sizeof($this->players) < $this->numplayers) {
-                $this->setStatus(ROOM_STATUS_WAITING);
-                $this->controller->roomEmit($this->id, "unready");
-            }
-        } else {
-            if (sizeof($this->players) > 0) {
-                $this->setStatus(ROOM_STATUS_WAITING);
-            } else {
-                $this->setStatus(ROOM_STATUS_EMPTY);
-            }
+        if($this->spectators->contains($player)){
+            $this->spectators->remove($player);
+            return true;
         }
+
+        return false;
     }
 
     public function spectate($player)
     {
-        if ($this->status !== ROOM_STATUS_PLAYING) {
+        if(!$this->isPlaying()){
             return false;
         }
 
-        $this->spectators[] = $player;
+        if($this->spectators->contains($player)){
+            return false;
+        }
+        
+        $this->spectators->add($player);
         return true;
     }
 
     public function playerReady($player)
     {
-        if ($this->status === ROOM_STATUS_READY) {
-            if (!in_array($player, $this->ready)) {
-                $this->ready[] = $player;
+        if($this->isReady()){
+            if(!$this->ready->contains($player)){
+                $this->ready->add($player);
 
-                if (sizeof($this->ready) == $this->numplayers) {
-                    $this->setStatus(ROOM_STATUS_PLAYING);
+                if(sizeof($this->ready) == $this->numplayers){
+                    $this->setStatus(self::STATUS_PLAYING);
                 }
             }
         }
@@ -112,7 +161,7 @@ abstract class Room
 
     public function playerUnready($player)
     {
-        if ($this->status === ROOM_STATUS_READY) {
+        if($this->isReady()){
             $this->controller->onRoomLeave($player->getSocket());
         }
     }
@@ -135,44 +184,44 @@ abstract class Room
 
         switch ($comb) {
             // Empty
-            case ROOM_STATUS_EMPTY . "x" . ROOM_STATUS_WAITING:
+            case self::STATUS_EMPTY . "x" . self::STATUS_WAITING:
                 $this->configure();
                 break;
-            case ROOM_STATUS_EMPTY . "x" . ROOM_STATUS_READY:
+            case self::STATUS_EMPTY . "x" . self::STATUS_READY:
                 $this->logger->error(__FUNCTION__.":".__LINE__ .": Illegal Status ". $comb ." in ". $this);
                 break;
-            case ROOM_STATUS_EMPTY . "x" . ROOM_STATUS_PLAYING:
+            case self::STATUS_EMPTY . "x" . self::STATUS_PLAYING:
                 $this->logger->error(__FUNCTION__.":".__LINE__ .": Illegal Status ". $comb ." in ". $this);
                 break;
 
             // Waiting
-            case ROOM_STATUS_WAITING . "x" . ROOM_STATUS_EMPTY:
+            case self::STATUS_WAITING . "x" . self::STATUS_EMPTY:
                 break;
-            case ROOM_STATUS_WAITING . "x" . ROOM_STATUS_READY:
+            case self::STATUS_WAITING . "x" . self::STATUS_READY:
                 $this->prepare();
                 break;
-            case ROOM_STATUS_WAITING . "x" . ROOM_STATUS_PLAYING:
+            case self::STATUS_WAITING . "x" . self::STATUS_PLAYING:
                 $this->logger->error(__FUNCTION__.":".__LINE__ .": Illegal Status ". $comb ." in ". $this);
                 break;
 
             // Ready
-            case ROOM_STATUS_READY . "x" . ROOM_STATUS_EMPTY:
+            case self::STATUS_READY . "x" . self::STATUS_EMPTY:
                 $this->logger->error(__FUNCTION__.":".__LINE__ .": Illegal Status ". $comb ." in ". $this);
                 break;
-            case ROOM_STATUS_READY . "x" . ROOM_STATUS_WAITING:
+            case self::STATUS_READY . "x" . self::STATUS_WAITING:
                 break;
-            case ROOM_STATUS_READY . "x" . ROOM_STATUS_PLAYING:
+            case self::STATUS_READY . "x" . self::STATUS_PLAYING:
                 $this->start();
                 break;
 
             // Playing
-            case ROOM_STATUS_PLAYING . "x" . ROOM_STATUS_EMPTY:
+            case self::STATUS_PLAYING . "x" . self::STATUS_EMPTY:
                 $this->logger->error(__FUNCTION__.":".__LINE__ .": Illegal Status ". $comb ." in ". $this);
                 break;
-            case ROOM_STATUS_PLAYING . "x" . ROOM_STATUS_WAITING:
+            case self::STATUS_PLAYING . "x" . self::STATUS_WAITING:
                 $this->logger->error(__FUNCTION__.":".__LINE__ .": Illegal Status ". $comb ." in ". $this);
                 break;
-            case ROOM_STATUS_PLAYING . "x" . ROOM_STATUS_READY:
+            case self::STATUS_PLAYING . "x" . self::STATUS_READY:
                 $this->logger->error(__FUNCTION__.":".__LINE__ .": Illegal Status ". $comb ." in ". $this);
                 break;
 
@@ -191,15 +240,16 @@ abstract class Room
 
     protected function prepare()
     {
-        $this->ready = array();
-        $this->controller->roomEmit($this->id, "ready");
+        $this->ready = new Mapping();
+        $this->controller->roomEmit($this->id, "ready", self::READY_TIME);
                 
         //add($time_interval, $func, $args = array(), $persistent = true)
-        Timer::add(GAME_READY_TIME, function () {
-            if ($this->status === ROOM_STATUS_READY) {
+        Timer::add(self::READY_TIME, function () {
+            if($this->isReady()){
                 $this->controller->roomEmit($this->id, "unready");
-                foreach ($this->players as $player) {
-                    if (!in_array($player, $this->ready)) {
+
+                foreach($this->players as $player){
+                    if(!$this->ready->contains($player)){
                         $this->controller->onRoomLeave($player->getSocket());
                     }
                 }

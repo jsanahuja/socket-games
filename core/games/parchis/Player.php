@@ -4,6 +4,7 @@ namespace Games\Games\Parchis;
 
 use Games\Games\Parchis\Chip;
 use Games\Games\Parchis\Color;
+use Games\Utils\Mapping;
 
 class Player extends \Games\Core\Player
 {
@@ -14,9 +15,12 @@ class Player extends \Games\Core\Player
     {
         parent::__construct($id, $username, $socket);
         
-        $this->chips = array();
+        $this->chips = new Mapping();
     }
 
+    /**
+     * Color
+     */
     public function set_color(Color $color)
     {
         $this->color = $color;
@@ -27,9 +31,12 @@ class Player extends \Games\Core\Player
         return $this->color;
     }
 
+    /**
+     * Chips
+     */
     public function add_chip(Chip $chip)
     {
-        $this->chips[$chip->get_id()] = $chip;
+        $this->chips->add($chip);
     }
 
     public function get_chips()
@@ -39,19 +46,18 @@ class Player extends \Games\Core\Player
 
     public function get_chip(int $id)
     {
-        return $this->chips[$id];
+        $this->chips->get($id);
     }
 
-    public function serialize()
+    /**
+     * Serialization
+     */
+    public function gameSerialize()
     {
-        $chips = array();
-        foreach ($this->chips as $chip) {
-            $chips[$chip->get_id()] = $chip->serialize();
-        }
-        return array(
+        return [
             "id" => $this->id,
-            "color" => $this->color->serialize(),
-            "chips" => $chips
-        );
+            "color" => $this->color->gameSerialize(),
+            "chips" => $this->chips->gameSerialize()
+        ];
     }
 }

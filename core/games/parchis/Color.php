@@ -2,19 +2,24 @@
 
 namespace Games\Games\Parchis;
 
-class Color
-{
-    public static $YELLOW = [0, "yellow",  5, 68, 69,  76];
-    public static $BLUE =   [1, "blue",   22, 17, 77,  84];
-    public static $RED =    [2, "red",    39, 34, 85,  92];
-    public static $GREEN =  [3, "green",  56, 51, 93, 100];
+use Games\Utils\GameSerializable;
+use Games\Utils\Comparable;
 
-    private $id;
-    private $name;
-    private $initial;
-    private $breaker;
-    private $postbreak;
-    private $finish;
+class Color implements GameSerializable, Comparable
+{
+    public static $COLORS = [
+        [0, "yellow",  5, 68, 69,  76],
+        [1, "blue",   22, 17, 77,  84],
+        [2, "red",    39, 34, 85,  92],
+        [3, "green",  56, 51, 93, 100]
+    ];
+
+    protected $id;
+    protected $name;
+    protected $initial;
+    protected $breaker;
+    protected $postbreak;
+    protected $finish;
 
     public function __construct($id, $name, $initial, $breaker, $postbreak, $finish)
     {
@@ -90,20 +95,19 @@ class Color
         return $this->finish;
     }
 
-    public function equals($color)
-    {
-        return $this->id == $color->get_id();
+    public function equals(Comparable $object){
+        return get_class($this) === get_class($object) && $this->id === $object->getId();
     }
-
-    public function serialize()
+    
+    public function gameSerialize()
     {
-        return array(
+        return [
             "id" => $this->id,
             "name" => $this->name,
             "initial" => $this->initial,
             "breaker" => $this->breaker,
             "postbreak" => $this->postbreak,
             "finish" => $this->finish,
-        );
+        ];
     }
 }
