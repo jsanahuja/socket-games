@@ -296,7 +296,7 @@ class Board
                 }
 
                 if ($to !== false && $this->valid_move($player, $chip, $to, $dices) !== false) {
-                    $move = array($chip->get_id(), $to);
+                    $move = array($chip->getId(), $to);
                     if (!in_array($move, $moves)) {
                         $moves[] = $move;
                     }

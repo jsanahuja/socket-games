@@ -146,7 +146,7 @@
             <div id="game" class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
                 <div id="loading" class="row">
                     <div class="loading">
-                        <img src="/assets/images/loading.svg" alt="Spinner loading" />
+                        <img src="/assets/common/images/loading.svg" alt="Spinner loading" />
                         <p>Conectado con el servidor...</p>
                     </div>
                 </div>
@@ -345,6 +345,7 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
     <script src="/assets/gModal/dist/gModal.min.js"></script>
+    <script src="/assets/common/js/controller.js"></script>
     <script src="/assets/parchis/game.js"></script>
 </body>
 

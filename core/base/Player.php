@@ -21,16 +21,6 @@ abstract class Player implements Mapable
         $this->socket = $socket;
     }
 
-    public function jsonSerialize(){
-        return [
-            "id" => $this->id,
-            "username" => $this->username,
-            "room" => $this->room === false ? false : $this->room->getId()
-        ];
-    }
-
-    abstract public function gameSerialize();
-
     public function equals(Comparable $object){
         return get_class($this) === get_class($object) && $this->id === $object->getId();
     }
@@ -61,6 +51,19 @@ abstract class Player implements Mapable
     public function getRoom(){
         return $this->room;
     }
+
+    /**
+     * Serialization
+     */
+    public function jsonSerialize(){
+        return [
+            "id" => $this->id,
+            "username" => $this->username,
+            "room" => $this->room === false ? false : $this->room->getId()
+        ];
+    }
+
+    abstract public function gameSerialize();
 
     /**
      * String conversion

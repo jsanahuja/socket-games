@@ -42,18 +42,6 @@ abstract class Room implements Mapable
         $this->logger = $logger;
     }
 
-    public function jsonSerialize(){
-        return [
-            "id" => $this->id,
-            "players" => $this->players->keys(),
-            "spectators" => $this->spectators->keys(),
-            "status" => $this->status,
-            "numplayers" => $this->numplayers
-        ];
-    }
-    
-    abstract public function gameSerialize();
-
     public function equals(Comparable $object){
         return get_class($this) === get_class($object) && $this->id === $object->getId();
     }
@@ -81,20 +69,34 @@ abstract class Room implements Mapable
         return $this->status === self::STATUS_PLAYING;
     }
 
+    public function emit($event, $data = null){
+        if ($data === null) {
+            $this->controller->getIO()->to("r" . $this->id)->emit($event);
+        }else{
+            $this->controller->getIO()->to("r" . $this->id)->emit($event, $data);
+        }
+    }
+
     /**
      * Room event handlers
      */
     public function join(Player $player)
     {
-        if($this->isReady() || $this->isPlaying() || sizeof($this->players) == $this->numplayers){
+        if($this->isReady() || $this->isPlaying()){
+            return false;
+        }
+
+        if($this->isWaiting() && sizeof($this->players) >= $this->numplayers){
             return false;
         }
 
         if($this->players->contains($player)){
+            print "WTF2";
             return false;
         }
 
         $this->players->add($player);
+        $player->getSocket()->join("r" . $this->id);
 
         if (sizeof($this->players) == $this->numplayers) {
             $this->setStatus(self::STATUS_READY);
@@ -109,16 +111,17 @@ abstract class Room implements Mapable
     {
         if($this->players->contains($player)){
             $this->players->remove($player);
+            $player->getSocket()->leave("r" . $this->id);
 
             if($this->isPlaying() && sizeof($this->players) == 0){
                 $this->setStatus(self::STATUS_EMPTY);
             }else if($this->isReady() && sizeof($this->players) < $this->numplayers){
-                $this->setStatus(STATUS_WAITING);
-                $this->controller->roomEmit($this, "unready");
+                $this->setStatus(self::STATUS_WAITING);
+                $this->emit("unready");
             }else if(sizeof($this->players) > 0){
-                $this->setStatus(STATUS_WAITING);
+                $this->setStatus(self::STATUS_WAITING);
             } else {
-                $this->setStatus(STATUS_EMPTY);
+                $this->setStatus(self::STATUS_EMPTY);
             }
 
             return true;
@@ -126,13 +129,14 @@ abstract class Room implements Mapable
 
         if($this->spectators->contains($player)){
             $this->spectators->remove($player);
+            $player->getSocket()->leave("r" . $this->id);
             return true;
         }
 
         return false;
     }
 
-    public function spectate($player)
+    public function spectate(Player $player)
     {
         if(!$this->isPlaying()){
             return false;
@@ -143,10 +147,12 @@ abstract class Room implements Mapable
         }
         
         $this->spectators->add($player);
+        $player->getSocket()->join("r" . $this->id);
+
         return true;
     }
 
-    public function playerReady($player)
+    public function playerReady(Player $player)
     {
         if($this->isReady()){
             if(!$this->ready->contains($player)){
@@ -159,11 +165,19 @@ abstract class Room implements Mapable
         }
     }
 
-    public function playerUnready($player)
+    public function playerUnready(Player $player)
     {
         if($this->isReady()){
             $this->controller->onRoomLeave($player->getSocket());
         }
+    }
+
+    public function playerMessage(Player $player, $message){
+        $this->emit("playerMessage", [
+            "chat" => "room",
+            "msg" => $message,
+            "playerid" => $player->getId()
+        ]);
     }
 
     /**
@@ -241,12 +255,12 @@ abstract class Room implements Mapable
     protected function prepare()
     {
         $this->ready = new Mapping();
-        $this->controller->roomEmit($this->id, "ready", self::READY_TIME);
+        $this->emit("ready", self::READY_TIME);
                 
         //add($time_interval, $func, $args = array(), $persistent = true)
         Timer::add(self::READY_TIME, function () {
             if($this->isReady()){
-                $this->controller->roomEmit($this->id, "unready");
+                $this->emit("unready");
 
                 foreach($this->players as $player){
                     if(!$this->ready->contains($player)){
@@ -260,6 +274,18 @@ abstract class Room implements Mapable
     abstract protected function start();
 
     abstract protected function finish();
+
+    public function jsonSerialize(){
+        return [
+            "id" => $this->id,
+            "players" => $this->players->keys(),
+            "spectators" => $this->spectators->keys(),
+            "status" => $this->status,
+            "numplayers" => $this->numplayers
+        ];
+    }
+    
+    abstract public function gameSerialize();
 
     public function __toString()
     {

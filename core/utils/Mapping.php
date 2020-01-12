@@ -62,7 +62,7 @@ class Mapping implements GameSerializable, \JsonSerializable, \Countable, \Itera
 
     // IteratorAggregate
     public function getIterator(){
-        return $this->$elements;
+        return new \ArrayIterator($this->elements);
     }
     
     // JsonSerializable

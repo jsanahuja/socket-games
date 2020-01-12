@@ -9,7 +9,7 @@ class Ack
     private $players;
     private $callback;
 
-    public function __construct(Mapping $players, \Callable $callback)
+    public function __construct(Mapping $players, callable $callback)
     {
         $this->players = clone $players;
         $this->callback = $callback;

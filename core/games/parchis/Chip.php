@@ -3,6 +3,8 @@
 namespace Games\Games\Parchis;
 
 use Games\Games\Parchis\Color;
+use Games\Utils\Mapable;
+use Games\Utils\Comparable;
 
 class Chip implements Mapable
 {
@@ -17,14 +19,14 @@ class Chip implements Mapable
         $this->position = $position;
     }
 
-    public function get_id()
+    public function getId()
     {
         return $this->id;
     }
 
     public function get_uuid()
     {
-        return $this->color->get_name() . $this->get_id();
+        return $this->color->get_name() . $this->getId();
     }
 
     public function get_color()

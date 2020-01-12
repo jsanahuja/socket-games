@@ -37,12 +37,11 @@ class Controller implements \JsonSerializable
         }
     }
 
-    public function jsonSerialize()
-    {
-        return [
-            "players" => $this->players->jsonSerialize(),
-            "rooms" => $this->rooms->jsonSerialize()
-        ];
+    /**
+     * Getters
+     */
+    public function getIO(){
+        return $this->io;
     }
 
     /**
@@ -52,6 +51,7 @@ class Controller implements \JsonSerializable
         return isset($socket->player) && $this->players->contains($socket->player);
     }
 
+    // Legacy
     public function roomEmit($room, $event, $data = null)
     {
         // $this->logger->info(__FUNCTION__.":".__LINE__ .":". $this->rooms[$id] .":".$event);
@@ -60,16 +60,6 @@ class Controller implements \JsonSerializable
         } else {
             $this->io->to("room" . $room->getId())->emit($event);
         }
-    }
-    
-    public function updatePlayer(Player $player)
-    {
-        $this->io->emit("updatePlayer", $player->jsonSerialize());
-    }
-
-    public function updateRoom(Room $room)
-    {
-        $this->io->emit("updateRoom", $room->jsonSerialize());
     }
 
     /**
@@ -160,42 +150,12 @@ class Controller implements \JsonSerializable
 
                 $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player .":room:".$socket->player->room." ". $message);
                 
-                $this->roomEmit($room, "playerMessage", [
-                    'chat' => $chat,
-                    'msg'  => $message,
-                    'playerid' => $socket->player->getId()
-                ]);
-
+                $room->playerMessage($socket->player, $message);
                 break;
 
             default:
                 $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->player .": Invalid message: ". print_r($data, true));
                 break;
-        }
-    }
-
-    public function onRoomLeave($socket)
-    {
-        if(!$this->isPlayerConnected($socket)){
-            $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->conn->remoteAddress .": Socket had no player");
-            return;
-        }
-        
-        $room = $socket->player->getRoom();
-        if($room === false){
-            return;
-        }
-        
-        if($room->leave($socket->player)){
-            $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player .": left the room " . $room);
-
-            $socket->player->unsetRoom();
-            $player->getSocket()->leave("room" . $room->getId());
-
-            $this->updateRoom($room);
-            $this->updatePlayer($socket->player);
-        }else{
-            $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->player .": can't leave ". $room);
         }
     }
 
@@ -223,16 +183,18 @@ class Controller implements \JsonSerializable
             $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player .": joined the room " . $room);
 
             $socket->player->setRoom($room);
-            $player->getSocket()->join("room" . $room->getId());
 
-            $this->updateRoom($room);
-            $this->updatePlayer($socket->player);
+            $this->io->emit("playerJoinRoom", [
+                "roomid" => $room->getId(),
+                "playerid" => $socket->player->getId()
+            ]);
         }else{
             $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->player .": can't join ". $room);
         }
     }
 
-    public function onRoomSpectate($socket, $data){
+    public function onRoomSpectate($socket, $data)
+    {
         if(!$this->isPlayerConnected($socket)){
             $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->conn->remoteAddress .": Socket had no player:" . print_r($data, true));
             return;
@@ -255,12 +217,39 @@ class Controller implements \JsonSerializable
             $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player .": is now spectating the room " . $room);
 
             $socket->player->setRoom($room);
-            $player->getSocket()->join("room" . $room->getId());
 
-            $this->updateRoom($room);
-            $this->updatePlayer($socket->player);
+            $this->io->emit("playerSpectateRoom", [
+                "roomid" => $room->getId(),
+                "playerid" => $socket->player->getId()
+            ]);
         }else{
             $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->player .": can't spectate ". $room);
+        }
+    }
+    
+    public function onRoomLeave($socket)
+    {
+        if(!$this->isPlayerConnected($socket)){
+            $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->conn->remoteAddress .": Socket had no player");
+            return;
+        }
+        
+        $room = $socket->player->getRoom();
+        if($room === false){
+            return;
+        }
+        
+        if($room->leave($socket->player)){
+            $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player .": left the room " . $room);
+
+            $socket->player->unsetRoom();
+
+            $this->io->emit("playerLeaveRoom", [
+                "roomid" => $room->getId(),
+                "playerid" => $socket->player->getId()
+            ]);
+        }else{
+            $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->player .": can't leave ". $room);
         }
     }
 
@@ -351,4 +340,12 @@ class Controller implements \JsonSerializable
         }
     }
 
+    
+    public function jsonSerialize()
+    {
+        return [
+            "players" => $this->players->jsonSerialize(),
+            "rooms" => $this->rooms->jsonSerialize()
+        ];
+    }
 }

@@ -127,11 +127,10 @@ class Room extends \Games\Core\Room
     /**
      * Dices
      */
-
     protected function requestThrowDices()
     {
         $this->throw_dices = true;
-        $this->controller->roomEmit($this->id, "dices", $this->turn->id);
+        $this->emit("dices", $this->turn->id);
     }
 
     protected function onThrowDices()
@@ -157,7 +156,7 @@ class Room extends \Games\Core\Room
 
     protected function infoDices()
     {
-        $this->controller->roomEmit($this->id, "info_dices", $this->dices);
+        $this->emit("info_dices", $this->dices);
     }
 
     /**
@@ -166,7 +165,7 @@ class Room extends \Games\Core\Room
     protected function requestMove($moves)
     {
         $this->make_move = true;
-        $this->controller->roomEmit($this->id, "move", array(
+        $this->emit("move", array(
             "id" => $this->turn->id,
             "dices" => $this->dices,
             "moves" => $moves
@@ -221,7 +220,7 @@ class Room extends \Games\Core\Room
     
     protected function infoMove($chip)
     {
-        $this->controller->roomEmit($this->id, "info_move", array(
+        $this->emit("info_move", array(
             "id"   => $this->turn->id,
             "chip" => $chip->get_id(),
             "to"  => $chip->get_position()
@@ -241,7 +240,7 @@ class Room extends \Games\Core\Room
             return;
         }
         
-        $this->controller->roomEmit($this->id, "info_die", array(
+        $this->emit("info_die", array(
             "id"   => $targetPlayer->id,
             "chip" => $chip->get_id()
         ));
@@ -298,17 +297,17 @@ class Room extends \Games\Core\Room
 
     protected function infoPlay()
     {
-        $this->controller->roomEmit($this->id, "play", $this->jsonSerializeFull());
+        $this->emit("play", $this->gameSerialize());
     }
 
     protected function infoCantMove()
     {
-        $this->controller->roomEmit($this->id, "skip_move", $this->turn->id);
+        $this->emit("skip_move", $this->turn->id);
     }
 
     protected function infoMaxDoubles()
     {
-        $this->controller->roomEmit($this->id, "skip_double", $this->turn->id);
+        $this->emit("skip_double", $this->turn->id);
     }
 
     protected function start()
