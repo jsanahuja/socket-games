@@ -66,10 +66,14 @@ class Room extends \Games\Core\Room
         // First turn
         if ($this->turn === false) {
             $this->turn = $this->players->values()[rand(0, sizeof($this->players))];
+            print_r(gettype($this->turn));
+            print_r($this->turn->getId());
             return;
         }
 
         $this->turn = $this->players->next($this->turn);
+        print_r(gettype($this->turn));
+        print_r($this->turn->getId());
     }
 
     public function turn()
@@ -130,7 +134,7 @@ class Room extends \Games\Core\Room
     protected function requestThrowDices()
     {
         $this->throw_dices = true;
-        $this->emit("dices", $this->turn->id);
+        $this->emit("dices", $this->turn->getId());
     }
 
     protected function onThrowDices()
@@ -166,7 +170,7 @@ class Room extends \Games\Core\Room
     {
         $this->make_move = true;
         $this->emit("move", array(
-            "id" => $this->turn->id,
+            "id" => $this->turn->getId(),
             "dices" => $this->dices,
             "moves" => $moves
         ));
@@ -221,8 +225,8 @@ class Room extends \Games\Core\Room
     protected function infoMove($chip)
     {
         $this->emit("info_move", array(
-            "id"   => $this->turn->id,
-            "chip" => $chip->get_id(),
+            "id"   => $this->turn->getId(),
+            "chip" => $chip->getId(),
             "to"  => $chip->get_position()
         ));
     }
@@ -241,8 +245,8 @@ class Room extends \Games\Core\Room
         }
         
         $this->emit("info_die", array(
-            "id"   => $targetPlayer->id,
-            "chip" => $chip->get_id()
+            "id"   => $targetPlayer->getId(),
+            "chip" => $chip->getId()
         ));
     }
 
@@ -302,12 +306,12 @@ class Room extends \Games\Core\Room
 
     protected function infoCantMove()
     {
-        $this->emit("skip_move", $this->turn->id);
+        $this->emit("skip_move", $this->turn->getId());
     }
 
     protected function infoMaxDoubles()
     {
-        $this->emit("skip_double", $this->turn->id);
+        $this->emit("skip_double", $this->turn->getId());
     }
 
     protected function start()
@@ -338,7 +342,7 @@ class Room extends \Games\Core\Room
     {
         return array(
             "players" => $this->players->gameSerialize(),
-            "turn" => $this->turn === false ? false : $this->turn->id,
+            "turn" => $this->turn === false ? false : $this->turn->getId(),
             "dices" => $this->dices
         );
     }

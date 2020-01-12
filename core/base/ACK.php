@@ -17,10 +17,10 @@ class Ack
 
     public function ack($player)
     {
-        if(!$this->players->contains($player)){
+        if($this->players->contains($player)){
             $this->players->remove($player);
 
-            if(sizeof($this->players == 0)){
+            if(sizeof($this->players) == 0){
                 ($this->callback)();
             }
         }

@@ -43,6 +43,10 @@ class Controller implements \JsonSerializable
     public function getIO(){
         return $this->io;
     }
+    
+    public function getLogger(){
+        return $this->logger;
+    }
 
     /**
      * Helpers

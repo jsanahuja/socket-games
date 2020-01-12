@@ -1,5 +1,5 @@
 
-var [init, Chat, Controller, Room, Player] = (function($, socket){
+var [Chat, Controller, Room, Player] = (function($){
 
     var Chat = function(socket) {
         this.tab = 'global';
@@ -95,10 +95,13 @@ var [init, Chat, Controller, Room, Player] = (function($, socket){
 
     }
 
-    var Controller = function(ws, id, token, callback) {
+    var Controller = function(socket) {
+        this.socket = socket;
         this.id = null;
+
         this.rooms = {};
         this.players = {};
+
         this.chat = new Chat(socket);
 
         var self = this;
@@ -112,10 +115,10 @@ var [init, Chat, Controller, Room, Player] = (function($, socket){
             var r = new Room(room.id, room.status, room.numplayers);
 
             $.each(room.players, function(i, player) {
-                r.add_player(controller.get_player(player));
+                r.add_player(self.get_player(player));
             });
             $.each(room.spectators, function(i, player) {
-                r.add_spectators(controller.get_player(player));
+                r.add_spectators(self.get_player(player));
             });
             return r;
         };
@@ -123,6 +126,9 @@ var [init, Chat, Controller, Room, Player] = (function($, socket){
         /**
          * Current player
          */
+        this.set_id = function(id) {
+            this.id = id;
+        };
         this.player = function() {
             return this.get_player(this.id);
         };
@@ -228,7 +234,7 @@ var [init, Chat, Controller, Room, Player] = (function($, socket){
                         classes: 'gmodal-button-blue',
                         bindKey: 13 /* Enter */,
                         callback: function(modal) {
-                            socket.emit('ready');
+                            self.socket.emit('ready');
                             modal.hide();
                             self.pendingModal = new gModal({
                                 title: 'La partida va a empezar',
@@ -244,7 +250,7 @@ var [init, Chat, Controller, Room, Player] = (function($, socket){
                     location: 'in' /* 'in' or 'out' (side) the modal */,
                     bindKey: 27 /* Esc */,
                     callback: function(modal) {
-                        socket.emit('unready');
+                        self.socket.emit('unready');
                         modal.hide();
                     }
                 },
@@ -278,7 +284,7 @@ var [init, Chat, Controller, Room, Player] = (function($, socket){
             $('#rooms').hide();
             $('#play').show();
 
-            socket.emit('action', { action: 'ack', event: 'play' });
+            self.socket.emit('action', { action: 'ack', event: 'play' });
         };
 
         /**
@@ -292,11 +298,11 @@ var [init, Chat, Controller, Room, Player] = (function($, socket){
                 self.leaveRoom();
             }
 
-            socket.emit('join', { room: targetRoom.id });
+            self.socket.emit('join', { room: targetRoom.id });
         };
 
         this.leaveRoom = function() {
-            socket.emit('leave', { room: self.room().id });
+            self.socket.emit('leave', { room: self.room().id });
         };
 
         this.spectateRoom = function() {
@@ -307,7 +313,7 @@ var [init, Chat, Controller, Room, Player] = (function($, socket){
                 self.leaveRoom();
             }
 
-            socket.emit('spectate', { room: self.room().id });
+            self.socket.emit('spectate', { room: self.room().id });
         };
 
         this.render = function() {
@@ -322,72 +328,6 @@ var [init, Chat, Controller, Room, Player] = (function($, socket){
             $('#play').hide();
             $('#rooms').css('display', 'flex');
         };
-
-        /**
-         * Init. DOM Binding
-         */
-        this.setup = function(ws, id, token, callback){
-            self.connected = false;
-            self.socket = io(ws);
-            
-            self.socket.on('connect', function() {
-                if(self.connected){
-                    window.location.reload();
-                    return false;
-                }
-                
-                // Success authentication
-                self.socket.on('successAuth', function(data) {
-                    self.connected = true;
-                    self.id = data.id;
-
-                    $.each(data.players, function(pid, player) {
-                        self.add_player(controller.createPlayer(player));
-                    });
-            
-                    $.each(data.rooms, function(rid, room) {
-                        controller.add_room(controller.createRoom(room));
-                    });
-            
-                    controller.render();
-
-                    // Chat
-                    $('#chat-submit').on('click',       self.chat.sendMessage);
-                    $('#chat-message').on('keypress',   self.chat.keyPress);
-                    $('.chat-tab').on('click',          self.chat.switchTab);
-                    self.chat.triggerSwitchTab('global');
-
-                    // Lobby
-                    socket.on('playerConnect',      self.playerConnect);
-                    socket.on('playerDisconnect',   self.playerDisconnect);
-                    socket.on('playerMessage',      self.playerMessage);
-                    socket.on('playerJoinRoom',     self.playerJoinRoom);
-                    socket.on('playerSpectateRoom', self.playerSpectateRoom);
-                    socket.on('playerLeaveRoom',    self.playerLeaveRoom);
-
-                    
-                    $(document).on('click', '.join',        self.joinRoom);
-                    $(document).on('click', '.spectate',    self.joinRoom);
-                    $(document).on('click', '.leave',       self.leaveRoom);
-
-                    socket.on('ready',      self.ready);
-                    socket.on('unready',    self.unready);
-
-                    callback();
-                });
-    
-                // @TODO: Auth with id and token.
-                self.socket.emit('auth', {            
-                    username: 'User' + Math.floor(Math.random() * 54623523)
-                });    
-            });
-
-            self.socket.on('disconnected', function() {
-                self.socket.emit('disconnect');
-            });
-        }
-        
-        this.setup(ws, id, token, callback);
     }
 
     var Room = function(id) {
@@ -483,5 +423,5 @@ var [init, Chat, Controller, Room, Player] = (function($, socket){
         };
     }
 
-    return [init, Chat, Controller, Room, Player];
-})(jQuery, socket)
+    return [Chat, Controller, Room, Player];
+})(jQuery)

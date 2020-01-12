@@ -31,7 +31,7 @@ class Color implements GameSerializable, Comparable
         $this->finish    = $finish;
     }
 
-    public function get_id()
+    public function getId()
     {
         return $this->id;
     }

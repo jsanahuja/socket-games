@@ -54,7 +54,7 @@ class Mapping implements GameSerializable, \JsonSerializable, \Countable, \Itera
         }
         return false;
     }
-
+    
     // Countable
     public function count(){
         return count($this->elements);

@@ -72,8 +72,10 @@ abstract class Room implements Mapable
     public function emit($event, $data = null){
         if ($data === null) {
             $this->controller->getIO()->to("r" . $this->id)->emit($event);
+            $this->controller->getLogger()->info(__FUNCTION__.":".__LINE__ .": Room emit '" . $event ."': ". print_r($data, true));
         }else{
             $this->controller->getIO()->to("r" . $this->id)->emit($event, $data);
+            $this->controller->getLogger()->info(__FUNCTION__.":".__LINE__ .": Room emit '" . $event ."'");
         }
     }
 

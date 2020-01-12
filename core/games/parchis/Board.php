@@ -245,29 +245,28 @@ class Board
      */
     public function can_premove($player)
     {
-        return (sizeof($this->get_moves($player, [1,1])) +
-                sizeof($this->get_moves($player, [1,2])) +
-                sizeof($this->get_moves($player, [1,3])) +
-                sizeof($this->get_moves($player, [1,4])) +
-                sizeof($this->get_moves($player, [1,5])) +
-                sizeof($this->get_moves($player, [1,6])) +
-                sizeof($this->get_moves($player, [2,2])) +
-                sizeof($this->get_moves($player, [2,3])) +
-                sizeof($this->get_moves($player, [2,4])) +
-                sizeof($this->get_moves($player, [2,5])) +
-                sizeof($this->get_moves($player, [2,6])) +
-                sizeof($this->get_moves($player, [3,3])) +
-                sizeof($this->get_moves($player, [3,4])) +
-                sizeof($this->get_moves($player, [3,5])) +
-                sizeof($this->get_moves($player, [3,6])) +
-                sizeof($this->get_moves($player, [4,4])) +
-                sizeof($this->get_moves($player, [4,5])) +
-                sizeof($this->get_moves($player, [4,6])) +
-                sizeof($this->get_moves($player, [5,5])) +
-                sizeof($this->get_moves($player, [5,6])) +
-                sizeof($this->get_moves($player, [6,6])) +
-                sizeof($this->get_moves($player, [3,3]))
-               ) > 0;
+        return sizeof($this->get_moves($player, [1,1])) > 0 ||
+               sizeof($this->get_moves($player, [1,2])) > 0 ||
+               sizeof($this->get_moves($player, [1,3])) > 0 ||
+               sizeof($this->get_moves($player, [1,4])) > 0 ||
+               sizeof($this->get_moves($player, [1,5])) > 0 ||
+               sizeof($this->get_moves($player, [1,6])) > 0 ||
+               sizeof($this->get_moves($player, [2,2])) > 0 ||
+               sizeof($this->get_moves($player, [2,3])) > 0 ||
+               sizeof($this->get_moves($player, [2,4])) > 0 ||
+               sizeof($this->get_moves($player, [2,5])) > 0 ||
+               sizeof($this->get_moves($player, [2,6])) > 0 ||
+               sizeof($this->get_moves($player, [3,3])) > 0 ||
+               sizeof($this->get_moves($player, [3,4])) > 0 ||
+               sizeof($this->get_moves($player, [3,5])) > 0 ||
+               sizeof($this->get_moves($player, [3,6])) > 0 ||
+               sizeof($this->get_moves($player, [4,4])) > 0 ||
+               sizeof($this->get_moves($player, [4,5])) > 0 ||
+               sizeof($this->get_moves($player, [4,6])) > 0 ||
+               sizeof($this->get_moves($player, [5,5])) > 0 ||
+               sizeof($this->get_moves($player, [5,6])) > 0 ||
+               sizeof($this->get_moves($player, [6,6])) > 0 ||
+               sizeof($this->get_moves($player, [3,3])) > 0;
     }
 
     public function get_moves($player, $dices)
