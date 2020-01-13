@@ -24,7 +24,7 @@ class Room extends \Games\Core\Room
         $this->acks = array();
 
         $this->turn = false;
-        $this->numplayers = 4;
+        $this->numplayers = 3;
         $this->dices = array();
 
         $this->throw_dices = false;

@@ -177,7 +177,7 @@ var [Chat, Controller, Room, Player] = (function($){
             // unrender_player(data.id);
         };
 
-        this.playerMessage = function(chat, username, msg) {
+        this.playerMessage = function(data) {
             switch(data.chat){
                 case 'room':
                     self.chat.local_event('message', self.get_player(data.playerid).username, data.msg);
@@ -185,8 +185,12 @@ var [Chat, Controller, Room, Player] = (function($){
                 case 'global':
                     self.chat.global_event('message', self.get_player(data.playerid).username, data.msg);
                     break;
+                case "global":
+                    console.log("WTF");
+                    break;
                 default:
                     console.error("Unknown chat", data);
+                    break;
             }
         };
 

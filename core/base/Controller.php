@@ -123,7 +123,7 @@ class Controller implements \JsonSerializable
         }
         
         $chat = $data['chat'];
-        $message = trim($data["msg"]);
+        $message = trim(strip_tags($data["msg"]));
 
         if(empty($message)){
             $this->logger->error(__FUNCTION__.":".__LINE__ .":". $socket->player .": Empty message");
@@ -152,7 +152,7 @@ class Controller implements \JsonSerializable
                     return;
                 }
 
-                $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player .":room:".$socket->player->room." ". $message);
+                $this->logger->info(__FUNCTION__.":".__LINE__ .":". $socket->player .":room:".$socket->player->getRoom()." ". $message);
                 
                 $room->playerMessage($socket->player, $message);
                 break;

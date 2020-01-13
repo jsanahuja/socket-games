@@ -318,7 +318,7 @@
                 $('.dices').addClass('active');
 
                 // @TODO: REMOVE
-                self.throw_dices();
+                // self.throw_dices();
             }
             self.highlight_turn();
         };
@@ -348,22 +348,15 @@
         this.dragchip = false;
 
         this.request_move = function(data) {
-            // @TODO: FIX: Consider "dices" x10 and x20.
-            switch (data.dices.length) {
-                case 2:
-                    $('#dice1').removeClass('used');
-                    $('#dice2').removeClass('used');
-                    break;
-                case 1:
-                    if (data.dices[0] == self.dices[0]) {
-                        $('#dice2').addClass('used');
-                    } else {
-                        $('#dice1').addClass('used');
-                    }
-                case 0:
-                    $('#dice1').addClass('used');
-                    $('#dice2').addClass('used');
-                    break;
+            if(data.dices.indexOf(self.dices[0])){
+                $('#dice1').removeClass('used');
+            }else{
+                $('#dice1').addClass('used');
+            }
+            if(data.dices.indexOf(self.dices[1])){
+                $('#dice2').removeClass('used');
+            }else{
+                $('#dice2').addClass('used');
             }
 
             self.turn = data.id;
@@ -372,7 +365,7 @@
                 self.players[id].highlight_chips(true, self.moves);
 
                 // @TODO: Remove
-                socket.emit('action', { action: 'move', id: data.moves[0][0], to: data.moves[0][1] });
+                // socket.emit('action', { action: 'move', id: data.moves[0][0], to: data.moves[0][1] });
             }
         };
 
