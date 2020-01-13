@@ -13,7 +13,7 @@ class BoardMock extends Board
 {
     public function virtual_move($chip, $to)
     {
-        $id = $chip->get_id();
+        $id = $chip->getId();
         $from = $chip->get_position();
 
         if ($from != -1) {
@@ -46,18 +46,11 @@ class BoardTest extends TestCase
 
     protected function setUp() : void
     {
-        $this->players = array();
-
-        $colors = [
-            Color::$YELLOW,
-            Color::$BLUE,
-            Color::$RED,
-            Color::$GREEN
-        ];
+        $this->players = array();        
 
         for ($i = 0; $i < 4; $i++) {
             $player = new Player($i, "User". $i, null);
-            $player->set_color(new Color(... $colors[$i]));
+            $player->set_color(new Color(... Color::$COLORS[$i]));
 
             for ($j = 0; $j < 4; $j++) {
                 $player->add_chip(new Chip($j, $player->get_color()));

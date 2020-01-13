@@ -13,14 +13,21 @@
         $('.chip').on('dragstart',  this.game.start_move);
         $('.box').on('drop',        this.game.make_move);
 
+        $(".box").on("dragover", function(e){
+            e.preventDefault();
+        });
+
+        $('.chip').on('mouseover', this.game.highlight_moves);
+        $('.chip').on('mouseout',  this.game.unhighlight_moves);
+
         console.log(this);
         this.socket.on('dices',          this.game.request_dices);
         this.socket.on('info_dices',     this.game.info_dices);
         this.socket.on('move',           this.game.request_move);
         this.socket.on('skip_move',      this.game.skip_move);
         this.socket.on('skip_double',    this.game.skip_double);
-        this.socket.on('info_move',      this.game.info_move);
-        this.socket.on('info_die',       this.game.info_die);
+        this.socket.on('info_move',      this.game.confirm_move);
+        this.socket.on('info_die',       this.game.confirm_die);
     };
 
     Controller.prototype.unset_game = function() {
@@ -288,7 +295,7 @@
         };
 
         this.highlight_turn = function() {
-            $.each(this.players, function(i, player) {
+            $.each(self.players, function(i, player) {
                 player.highlight(self.my_turn());
             });
         };
@@ -305,11 +312,13 @@
          * Dices
          */
         this.request_dices = function(playerid) {
-            console.log("TURN!!", playerid);
             self.turn = playerid;
             self.dices = [];
             if (self.my_turn()) {
                 $('.dices').addClass('active');
+
+                // @TODO: REMOVE
+                self.throw_dices();
             }
             self.highlight_turn();
         };
@@ -361,20 +370,28 @@
             if (self.my_turn()) {
                 self.moves = data.moves;
                 self.players[id].highlight_chips(true, self.moves);
+
+                // @TODO: Remove
+                socket.emit('action', { action: 'move', id: data.moves[0][0], to: data.moves[0][1] });
             }
         };
 
-        this.highlight_moves = function(status, chip) {
+        this.unhighlight_moves = function(){
+            $('.box').removeClass('active');
+        }
+
+        this.highlight_moves = function() {
             $('.box').removeClass('active');
 
-            if (this.turn == id && status) {
+            var chip = $(this);
+            if (self.my_turn()) {
                 var [type, color, cid] = chip.attr('id').split('_');
 
-                if (color != this.players[id].color.name) return;
+                if (color != self.players[id].color.name) return;
 
-                for (var i = 0; i < this.moves.length; i++) {
-                    if (this.moves[i][0] == cid) {
-                        $('#box_' + this.moves[i][1]).addClass('active');
+                for (var i = 0; i < self.moves.length; i++) {
+                    if (self.moves[i][0] == cid) {
+                        $('#box_' + self.moves[i][1]).addClass('active');
                     }
                 }
             }
@@ -382,7 +399,7 @@
 
         this.start_move = function(e) {
             var chip = $(this);
-            if (self.my_turn()) {
+            if (!self.my_turn()) {
                 self.dragchip = false;
             } else {
                 var [type, color, cid] = chip.attr('id').split('_');
@@ -415,9 +432,9 @@
         };
 
         this.confirm_move = function(data) {
-            var player = this.get_player(data.id);
+            var player = self.get_player(data.id);
 
-            if (data.id == this.id) {
+            if (data.id == self.id) {
                 player.highlight_chips(false);
                 player.highlight(false);
             }
@@ -426,7 +443,7 @@
                 from = chip.position,
                 side = false;
 
-            $.each(this.players, function(pid, player) {
+            $.each(self.players, function(pid, player) {
                 $.each(player.get_chips(), function(cid, chip) {
                     if (chip.position == data.to && data.to != -1) {
                         chip.go_to(chip.position, 'left');
@@ -442,7 +459,7 @@
         };
 
         this.confirm_die = function(data) {
-            this.get_player(data.id).get_chip(data.chip).move(-1);
+            self.get_player(data.id).get_chip(data.chip).move(-1);
         };
 
         this.get_box_position = function(bid, side) {
@@ -571,17 +588,6 @@
     
                 controller.set_game(game);
                 controller.play();
-            });
-
-            $('.box').on('dragover', function(e) {
-                e.preventDefault();
-            });
-    
-            $('.chip').on('mouseover', function(e) {
-                game.highlight_moves(true, $(this));
-            });
-            $('.chip').on('mouseout', function(e) {
-                game.highlight_moves(false);
             });
     
             $(window).on('resize', function(e) {

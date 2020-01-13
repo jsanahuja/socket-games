@@ -24,7 +24,7 @@ class Room extends \Games\Core\Room
         $this->acks = array();
 
         $this->turn = false;
-        $this->numplayers = 2;
+        $this->numplayers = 4;
         $this->dices = array();
 
         $this->throw_dices = false;
@@ -65,7 +65,7 @@ class Room extends \Games\Core\Room
     {
         // First turn
         if ($this->turn === false) {
-            $this->turn = $this->players->values()[rand(0, sizeof($this->players))];
+            $this->turn = $this->players->values()[rand(0, sizeof($this->players)-1)];
             print_r(gettype($this->turn));
             print_r($this->turn->getId());
             return;
@@ -284,7 +284,12 @@ class Room extends \Games\Core\Room
                     $this->logger->error(__FUNCTION__.":".__LINE__ .":". $player .": Invalid move ". print_r($data, true));
                     return;
                 }
-                $this->onChipMove($player->get_chip($data["id"]), $data["to"]);
+                $chip = $player->get_chip($data["id"]);
+                if($chip === false){
+                    $this->logger->error(__FUNCTION__.":".__LINE__ .":". $player .": Invalid chip to move ". print_r($data, true));
+                    return;
+                }
+                $this->onChipMove($chip, $data["to"]);
                 break;
             case "ack":
                 if (!isset($data["event"]) || !isset($this->acks[$data["event"]])) {

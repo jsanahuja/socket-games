@@ -11,7 +11,7 @@ class Player extends \Games\Core\Player
     private $color;
     private $chips;
 
-    public function __construct(int $id, string $username, $socket)
+    public function __construct($id, string $username, $socket)
     {
         parent::__construct($id, $username, $socket);
         
@@ -44,9 +44,9 @@ class Player extends \Games\Core\Player
         return $this->chips;
     }
 
-    public function get_chip(int $id)
+    public function get_chip($id)
     {
-        $this->chips->get($id);
+        return $this->chips->get($id);
     }
 
     /**

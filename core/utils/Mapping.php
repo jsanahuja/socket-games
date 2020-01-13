@@ -50,7 +50,7 @@ class Mapping implements GameSerializable, \JsonSerializable, \Countable, \Itera
             if($isNext)
                 return $e;
             
-            $isNext = $element->equals(end($e));
+            $isNext = $element->equals($e);
         }
         return false;
     }
