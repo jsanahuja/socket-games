@@ -11,43 +11,84 @@
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="/assets/gModal/dist/gModal.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/fontello/css/icons.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/parchis/game.css" rel="stylesheet" type="text/css" />
 
     <style>
+        body{background: #d8d8d8;}
         .container-fluid{padding:0}
         .row{margin:0;}
+
+/*         
+        body::-webkit-scrollbar {width: 12px;background:white;border-left:1px #007bff solid;}
+        body::-webkit-scrollbar-track {border-right: 1px #007bff solid;padding: 2px;}
+        body::-webkit-scrollbar-thumb {background: #4ca2ff;border-radius: 3px;}
+        body::-webkit-scrollbar-thumb:hover {background: #78b9ff;}
+        body::-webkit-scrollbar-track-piece {} */
+
+        table {display: flex;flex-flow: column;height: 100%;width: 100%;padding:0.25em;}
+        table thead {flex: 0 0 auto;width: calc(100% - 0.9em);}
+        table tbody {flex: 1 1 auto;display: block;overflow-y: scroll;}
+        table tbody tr {width: 100%;}
+        table thead, table tbody tr {display: table;table-layout: fixed;}
+
+        table th{text-align:center;}
+        table td:last-child{text-align:center;}
+        table tbody tr:nth-child(odd) {background: #efefef}
+        table tbody tr:nth-child(even) {background: #FFF}
+        table td, table th{padding:0.25em 0.5em;}
+
+        .section-header{
+            padding: 0.75em 1em;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-top-right-radius: 6px;
+            border-top-left-radius: 6px;
+            background: #353535;
+            color: #FFF;
+        }
+        .section-content{
+            background:#FFF;
+        }        
+        .section-content table tbody::-webkit-scrollbar {width: 5px;background: #CECECE;}
+        .section-content table tbody::-webkit-scrollbar-track {}
+        .section-content table tbody::-webkit-scrollbar-thumb {background: #353535;}
+        .section-content table tbody::-webkit-scrollbar-thumb:hover {background: #353535;}
+        .section-content table tbody::-webkit-scrollbar-track-piece {}
+
+        #players .section-content{height:340px;}
         
         #chat {padding: 0;}
-        #chat .chat-nav li {cursor: pointer;width: 50%;padding: 5px 0;background: #FFF;text-align: center;border: 1px #000 solid;border-bottom:1px #007bff solid;box-sizing: border-box;}
+        #chat .chat-nav li {cursor: pointer;width: 50%;padding: 5px 0;background: #FFF;text-align: center;border:1px #777 solid;color:#777;border-top:0;box-sizing: border-box;}
         #chat .chat-nav li:first-child {border-left: 0;}
         #chat .chat-nav li:last-child {border-right: 0;}
-        #chat .chat-nav li.active {border-bottom: 0;border-color:#007bff;color: #007bff;}
-        #chat .chat-window {overflow-y: auto;margin:5px;border-top: 0;padding: 0.25em 0.5em;}
+        #chat .chat-nav li.active {border: 0;color: #353535;}
+        #chat .chat-window {overflow-y: auto;margin:0.25em;border-top: 0;padding: 0.25em 0.5em;height:300px;}
         #chat .chat-window::-webkit-scrollbar {width: 5px;background: #CECECE;}
         #chat .chat-window::-webkit-scrollbar-track {}
-        #chat .chat-window::-webkit-scrollbar-thumb {background: #4ca2ff;border-radius: 6px;}
-        #chat .chat-window::-webkit-scrollbar-thumb:hover {background: #78b9ff;}
+        #chat .chat-window::-webkit-scrollbar-thumb {background: #353535;border-radius: 6px;}
+        #chat .chat-window::-webkit-scrollbar-thumb:hover {background: #353535;}
         #chat .chat-window::-webkit-scrollbar-track-piece {}
         #chat .chat-window p {margin-bottom: 0;}
         #chat .chat-input {border-top: 0;padding: 0.25em 0.5em;}
 
-        #game {background: #ececec;padding: 1em 3em;height:100vh;overflow-y: auto;}
-        #game::-webkit-scrollbar {width: 12px;background:white;border-left:1px #007bff solid;}
-        #game::-webkit-scrollbar-track {border-right: 1px #007bff solid;padding: 2px;}
-        #game::-webkit-scrollbar-thumb {background: #4ca2ff;border-radius: 3px;}
-        #game::-webkit-scrollbar-thumb:hover {background: #78b9ff;}
-        #game::-webkit-scrollbar-track-piece {}
+        #loading .loading{display: inline-block;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);}
 
-        #game #loading .loading{display: inline-block;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);}
-
-        #game #rooms{display:none;}
-        #game #rooms .room{padding:0.25em;}
-        #game #rooms .room .room-header{
-            padding: 0.5em 1em;
-            font-weight: bold;
-            color: #e8e8e8;background: linear-gradient(#6a91ff, #445bf9);
+        #rooms{display:none;}
+        #rooms .room{padding:0.25em;}
+        #rooms .room .room-header{
+            padding: 0.75em 1em;
             text-transform: uppercase;
-            border-top-left-radius: 6px;
+            font-weight: bold;
             border-top-right-radius: 6px;
+            border-top-left-radius: 6px;
+            background: #353535;
+            color: #FFF;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #rooms .room .room-header button{
         }
         #game #rooms .room .room-content{
             min-height:200px;
@@ -56,94 +97,14 @@
 
         .gmodal-body .ready-timer{text-align: center;font-size: 2em;}
 
-        #game #play{display:none;position:relative;margin:10px auto;border-radius:20px;background-color: #FFF;}
-        #game #play #square_yellow {position:absolute;width:30%;height:30%;background:#dad05f;background: linear-gradient(315deg, #dad05f 0%, #e9dd7f 100%);left:0px;top:0px;border-bottom-right-radius:6px;}
-        #game #play #square_green  {position:absolute;width:30%;height:30%;background:#92c348;background: linear-gradient( 45deg, #92c348 0%, #a0cc6a 100%);right:0px;top:0px;border-bottom-left-radius:6px;}
-        #game #play #square_blue   {position:absolute;width:30%;height:30%;background:#69a5d2;background: linear-gradient(225deg, #69a5d2 0%, #7db2d4 100%);left:0px;bottom:0px;border-top-right-radius:6px;}
-        #game #play #square_red    {position:absolute;width:30%;height:30%;background:#e7413c;background: linear-gradient(135deg, #e7413c 0%, #e99c9b 100%);right:0px;bottom:0px;border-top-left-radius:6px;}
 
-        #game #play .user{display:none;position: absolute;background: #FFF;border: 2px #fff solid;border-radius: 3px;}
-        #game #play .user .profilepic{height: 60px;width: 60px;background: #CCC;display: inline-block;vertical-align: middle;}
-        #game #play .user .username{display: inline-block;padding: 0px 0.5em;}
-
-        #game #play #square_yellow .user{top:0; left:0;}
-        #game #play #square_green  .user{top:0; right:0;}
-        #game #play #square_blue   .user{bottom:0; left:0;}
-        #game #play #square_red    .user{bottom:0; right:0;}
-
-        #game #play #area_top       {z-index:3;position:absolute;width:40%;height:34.28571429%;left:30%;top:0;}
-        #game #play #area_right     {z-index:3;position:absolute;width:40%;height:34.28571429%;left:100%;top:30%;transform-origin: top left;transform:rotate(90deg);}
-        #game #play #area_bottom    {z-index:3;position:absolute;width:40%;height:34.28571429%;left:70%;top:100%;transform-origin: top left;transform:rotate(180deg);}
-        #game #play #area_left      {z-index:3;position:absolute;width:40%;height:34.28571429%;left:0%;top:70%;transform-origin: top left;transform:rotate(-90deg);}
-
-        #game #play .box{float:left;height:12.5%;width:33.3333333%;display:block;background:#FFF;}
-        #game #play .box.bleft{text-align:right;}
-        #game #play .box.bcenter{text-align:center;}
-        #game #play .box.bright{text-align:left;}
-        #game #play .box span{vertical-align: middle;padding:0 5px;}
-        #game #play .yellow{background:#e8ca3f;}
-        #game #play .green{background:#69a63b;}
-        #game #play .blue{background:#4b96bf;}
-        #game #play .red{background:#e7413c;}
-        #game #play .yellow {background:#e8ca3f;background: linear-gradient(315deg, #e8ca3f 0%, #ece698 100%);}
-        #game #play .green  {background:#69a63b;background: linear-gradient(45deg,  #94c44c 0%, #a4d855 100%);}
-        #game #play .blue   {background:#4b96bf;background: linear-gradient(225deg, #4b96bf 0%, #7bb6e2 100%);}
-        #game #play .red    {background:#e7413c;background: linear-gradient(135deg, #e7413c 0%, #ff7672 100%);}
-        #game #play .secure.yellow {background:#e8ca3f;}
-        #game #play .secure.green  {background:#94c44c;}
-        #game #play .secure.blue   {background:#4b96bf;}
-        #game #play .secure.red    {background:#e7413c;}
-        #game #play .lyellow{background:#e9dd7f;}
-        #game #play .lgreen{background:#a0cc6a;}
-        #game #play .lblue{background:#7db2d4;}
-        #game #play .lred{background:#e99c9b;}
-        #game #play .box.secure{
-            background-image: url(/assets/parchis/circle.svg);
-            background-size: auto 80%;
-            background-position: center center;
-            background-repeat: no-repeat;
-            color:#666 !important;
-        }
-        #game #play .box.active{cursor:pointer;animation: orangting 1s infinite;transform-origin: center;}
-
-        #game #play #area_center  {position:absolute;width:40.1%;height:40.1%;background:#fff;left:29.95%;top:29.95%;overflow:hidden;}
-        #game #play #area_center .center_center {position:absolute;width:100%;height:100%;transform:rotate(45deg);}
-        #game #play #area_center .center_center .yellow {position:absolute;width:100%;height:100%;left:-25%;top:-25%;}
-        #game #play #area_center .center_center .green  {position:absolute;width:100%;height:100%;left:50%;top:-50%;}
-        #game #play #area_center .center_center .blue   {position:absolute;width:100%;height:100%;left:-50%;top:50%;}
-        #game #play #area_center .center_center .red    {position:absolute;width:100%;height:100%;left:50%;top:50%;}
-        #game #play #area_center .center_center .dices  {position:absolute;width:50%;height:50%;left:25%;top:25%;background:#FFF;border-radius:100%;transform:rotate(-45deg);}
-        #game #play #area_center .center_center .dices div{position: absolute;width: 25%;height: 25%;top: 50%;transform: translate(-50%, -50%);background-size: 100% 100%;background-repeat: no-repeat;background-position: center center;}
-        #game #play #area_center .center_center .dices #dice1{left:  25%;transform: translate(-50%, -50%);}
-        #game #play #area_center .center_center .dices #dice2{right: 25%;transform: translate( 50%, -50%);}
-        #game #play #area_center .center_center .dices.active{cursor:pointer;animation: dicesbeating 1s infinite;transform-origin: center;}
-
-        
-        #game #play .chip{position: absolute;display:none;z-index:10;top: 48.5%;left: 48.5%;height: 3%;width: 3%;border-radius: 100%;box-shadow: 0px 0px 2px 1px #000;}
-        #game #play .chip.active{cursor:pointer;animation: chipbeating 1s infinite;transform-origin: center;}
-        
-        @keyframes dicesbeating {
-            from { transform: rotate(-45deg); }
-            50% { transform: rotate(-45deg) scale(1.1); }
-            to { transform: rotate(-45deg); }
-        }
-        @keyframes chipbeating {
-            from {}
-            50% { transform: scale(1.2); }
-            to {}
-        }
-        @keyframes orangting {
-            from {}
-            50% {background: orange;}
-            to {}
-        }        
         </style>
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div id="game" class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+            <div id="game" class="p-3 col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
                 <div id="loading" class="row">
                     <div class="loading">
                         <img src="/assets/common/images/loading.svg" alt="Spinner loading" />
@@ -321,21 +282,43 @@
                 <div id="rooms" class="row"></div>
             </div>
 
-            <div id="chat" class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
-                <ul class="chat-nav nav">
-                    <li class="chat-tab" data-nav="global">Global</li>
-                    <li class="chat-tab" data-nav="room">Room</li>
-                </ul>
-                <div class="chat-window d-none" data-nav="global"></div>
-                <div class="chat-window d-none" data-nav="room"></div>
-                <div class="chat-input">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Mensaje..." id="chat-message" />
-                        <div class="input-group-append">
-                            <input type="submit" id="chat-submit" class="btn btn-outline-primary" value="Enviar" />
+            <div class="p-3 col-xl-3 col-lg-3 col-md-4 col-sm-12 col-12">
+                <div id="chat">
+                    <div class="section-header text-center">Chat</div>
+                    <div class="section-content pb-1">
+                        <ul class="chat-nav nav">
+                            <li class="chat-tab" data-nav="global">Sala</li>
+                            <li class="chat-tab" data-nav="room">Mesa</li>
+                        </ul>
+                        <div class="chat-window d-none" data-nav="global"></div>
+                        <div class="chat-window d-none" data-nav="room"></div>
+                        <div class="chat-input">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Mensaje..." id="chat-message" />
+                                <div class="input-group-append">
+                                    <input type="submit" id="chat-submit" class="btn btn-outline-primary" value="Enviar" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div id="players" class="mt-3">
+                    <div class="section-header text-center">Jugadores</div>
+                    <div class="section-content">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Jugador</th>
+                                    <th>Sala</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
             </div>
         </div>
     </div>

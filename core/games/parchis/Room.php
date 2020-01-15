@@ -24,7 +24,7 @@ class Room extends \Games\Core\Room
         $this->acks = array();
 
         $this->turn = false;
-        $this->numplayers = 3;
+        $this->numplayers = 1;
         $this->dices = array();
 
         $this->throw_dices = false;
@@ -63,17 +63,12 @@ class Room extends \Games\Core\Room
      */
     private function assign_next_turn()
     {
-        // First turn
         if ($this->turn === false) {
+            // First turn
             $this->turn = $this->players->values()[rand(0, sizeof($this->players)-1)];
-            print_r(gettype($this->turn));
-            print_r($this->turn->getId());
-            return;
+        }else{
+            $this->turn = $this->players->next($this->turn);
         }
-
-        $this->turn = $this->players->next($this->turn);
-        print_r(gettype($this->turn));
-        print_r($this->turn->getId());
     }
 
     public function turn()

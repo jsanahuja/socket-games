@@ -1,6 +1,4 @@
 (function($, port) {
-
-
     /**
      * GAME 
      * SPECITIC
@@ -9,25 +7,25 @@
     Controller.prototype.set_game = function(game) {
         this.game = game;
 
-        $('.dices').on('click',     this.game.throw_dices);
-        $('.chip').on('dragstart',  this.game.start_move);
-        $('.box').on('drop',        this.game.make_move);
+        $('.dices').on('click', this.game.throw_dices);
+        $('.chip').on('dragstart', this.game.start_move);
+        $('.box').on('drop', this.game.make_move);
 
-        $(".box").on("dragover", function(e){
+        $('.box').on('dragover', function(e) {
             e.preventDefault();
         });
 
         $('.chip').on('mouseover', this.game.highlight_moves);
-        $('.chip').on('mouseout',  this.game.unhighlight_moves);
+        $('.chip').on('mouseout', this.game.unhighlight_moves);
 
         console.log(this);
-        this.socket.on('dices',          this.game.request_dices);
-        this.socket.on('info_dices',     this.game.info_dices);
-        this.socket.on('move',           this.game.request_move);
-        this.socket.on('skip_move',      this.game.skip_move);
-        this.socket.on('skip_double',    this.game.skip_double);
-        this.socket.on('info_move',      this.game.confirm_move);
-        this.socket.on('info_die',       this.game.confirm_die);
+        this.socket.on('dices', this.game.request_dices);
+        this.socket.on('info_dices', this.game.info_dices);
+        this.socket.on('move', this.game.request_move);
+        this.socket.on('skip_move', this.game.skip_move);
+        this.socket.on('skip_double', this.game.skip_double);
+        this.socket.on('info_move', this.game.confirm_move);
+        this.socket.on('info_die', this.game.confirm_die);
     };
 
     Controller.prototype.unset_game = function() {
@@ -348,14 +346,14 @@
         this.dragchip = false;
 
         this.request_move = function(data) {
-            if(data.dices.indexOf(self.dices[0])){
+            if (data.dices.indexOf(self.dices[0])) {
                 $('#dice1').removeClass('used');
-            }else{
+            } else {
                 $('#dice1').addClass('used');
             }
-            if(data.dices.indexOf(self.dices[1])){
+            if (data.dices.indexOf(self.dices[1])) {
                 $('#dice2').removeClass('used');
-            }else{
+            } else {
                 $('#dice2').addClass('used');
             }
 
@@ -369,9 +367,9 @@
             }
         };
 
-        this.unhighlight_moves = function(){
+        this.unhighlight_moves = function() {
             $('.box').removeClass('active');
-        }
+        };
 
         this.highlight_moves = function() {
             $('.box').removeClass('active');
@@ -505,7 +503,7 @@
     };
 
     socket.on('connect', function() {
-        if(connected){
+        if (connected) {
             location.reload();
             return;
         }
@@ -514,40 +512,39 @@
 
         socket.on('successAuth', function(data) {
             controller.set_id(data.id);
-    
+
             $.each(data.players, function(pid, player) {
                 controller.add_player(controller.createPlayer(player));
             });
-    
+
             $.each(data.rooms, function(rid, room) {
                 controller.add_room(controller.createRoom(room));
             });
-    
+
             controller.render();
-    
+
             // Chat bindings
-            $('#chat-submit').on('click',       controller.chat.sendMessage);
-            $('#chat-message').on('keypress',   controller.chat.keyPress);
-            $('.chat-tab').on('click',          controller.chat.switchTab);
+            $('#chat-submit').on('click', controller.chat.sendMessage);
+            $('#chat-message').on('keypress', controller.chat.keyPress);
+            $('.chat-tab').on('click', controller.chat.switchTab);
             controller.chat.triggerSwitchTab('global');
-    
+
             // Remove bindings
-            socket.on('playerConnect',      controller.playerConnect);
-            socket.on('playerDisconnect',   controller.playerDisconnect);
-            socket.on('playerMessage',      controller.playerMessage);
-    
-            socket.on('playerJoinRoom',      controller.playerJoinRoom);
-            socket.on('playerSpectateRoom',  controller.playerSpectateRoom);
-            socket.on('playerLeaveRoom',     controller.playerLeaveRoom);
-    
-    
+            socket.on('playerConnect', controller.playerConnect);
+            socket.on('playerDisconnect', controller.playerDisconnect);
+            socket.on('playerMessage', controller.playerMessage);
+
+            socket.on('playerJoinRoom', controller.playerJoinRoom);
+            socket.on('playerSpectateRoom', controller.playerSpectateRoom);
+            socket.on('playerLeaveRoom', controller.playerLeaveRoom);
+
             $(document).on('click', '.join', controller.joinRoom);
             $(document).on('click', '.spectate', controller.joinRoom);
             $(document).on('click', '.leave', controller.leaveRoom);
-    
+
             socket.on('ready', controller.ready);
             socket.on('unready', controller.unready);
-    
+
             socket.on('play', function(data) {
                 game = new Game(controller.id);
                 $.each(data.players, function(i, player) {
@@ -560,10 +557,10 @@
                         player.color.finish,
                         $('#square_' + player.color.name)
                     );
-    
+
                     controller.get_player(player.id).set_color(color);
                     controller.get_player(player.id).init_chips();
-    
+
                     $.each(player.chips, function(j, chip) {
                         var chip = new Chip(
                             chip.id,
@@ -575,32 +572,25 @@
                         chip.render();
                         controller.get_player(player.id).add_chip(chip);
                     });
-    
+
                     game.add_player(controller.get_player(player.id));
                 });
-    
+
                 controller.set_game(game);
                 controller.play();
             });
-    
+
             $(window).on('resize', function(e) {
-                // Chat height
-                $('.chat-window').css(
-                    'height',
-                    $(window).height() - $('.chat-nav').height() - $('.chat-input').height() - 20 + 'px'
-                );
-    
                 // Play height
                 var min = Math.min($('#game').height(), $('#game').width()) - 20;
-    
+
                 $('#play').css({ height: min, width: min });
             });
             $(window).trigger('resize');
         });
 
-
         // @TODO: Authentication
-        socket.emit('auth', {            
+        socket.emit('auth', {
             username: 'User' + Math.floor(Math.random() * 54623523)
         });
     });

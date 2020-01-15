@@ -112,7 +112,7 @@ var [Chat, Controller, Room, Player] = (function($){
             return new Player(player.id, player.username);
         };
         this.createRoom = function(room) {
-            var r = new Room(room.id, room.status, room.numplayers);
+            var r = new Room(room.id, room.status);
 
             $.each(room.players, function(i, player) {
                 r.add_player(self.get_player(player));
@@ -165,16 +165,18 @@ var [Chat, Controller, Room, Player] = (function($){
         /**
          * Server events
          */
-        this.playerConnect = function(player) {
-            self.add_player(self.createPlayer(player));
-            self.chat.global_event('connect', self.get_player(player.id).username);
-            // render_player(data.id);
+        this.playerConnect = function(data) {
+            var player = self.createPlayer(data)
+            self.add_player(player);
+            self.chat.global_event('connect', player.username);
+            player.render();
         };
 
         this.playerDisconnect = function(id) {
-            self.chat.global_event('disconnect', self.get_player(id).username);
+            var player = self.get_player(id);
+            self.chat.global_event('disconnect', player.username);
             self.remove_player(id);
-            // unrender_player(data.id);
+            player.unrender();
         };
 
         this.playerMessage = function(data) {
@@ -334,10 +336,16 @@ var [Chat, Controller, Room, Player] = (function($){
         };
     }
 
-    var Room = function(id) {
+    var Room = function(id, status) {
         this.id = id;
+        this.status = status;
         this.players = {};
         this.spectators = {};
+
+        var STATUS_EMPTY = 0,
+            STATUS_WAITING = 1,
+            STATUS_READY = 2,
+            STATUS_PLAYING = 3;
 
         /**
          * Equals
@@ -370,6 +378,13 @@ var [Chat, Controller, Room, Player] = (function($){
         };
 
         /**
+         * Status
+         */
+        this.set_status = function(status){
+            this.status = status;
+        }
+
+        /**
          * UI
          */
         this.render = function() {
@@ -377,7 +392,7 @@ var [Chat, Controller, Room, Player] = (function($){
                 $('#rooms').append(
                     "<div id='room_" +
                         this.id +
-                        "' class='room col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12'>" +
+                        "' class='room col-xl-6 col-lg-6 col-md-12 col-sm-6 col-6'>" +
                         '</div>'
                 );
             }
@@ -386,17 +401,17 @@ var [Chat, Controller, Room, Player] = (function($){
             $.each(this.players, function(id, player) {
                 players_html += '<p>' + player.username + '</p>';
             });
+
+            var join_disabled = this.status >= STATUS_READY ? " disabled" : "",
+                spectate_disabled = this.status != STATUS_PLAYING ? " disabled" : "";
     
             $('#room_' + this.id).html(
-                "<div class='room-header'>Mesa " +
-                    this.id +
-                    '</div>' +
-                    "<div class='room-content'>" +
-                    "<button class='join' data-room='" +
-                    this.id +
-                    "'>Entrar</button>" +
-                    players_html +
-                    '</div>'
+                '<div class="room-header">'+
+                    'Mesa ' + this.id +
+                    '<button class="btn join'+join_disabled+'"'+join_disabled+' data-room="' + this.id + '">Entrar</button>' +
+                    '<button class="btn spectate'+spectate_disabled+'"'+spectate_disabled+' data-room="' + this.id + '">Ver</button>' +
+                '</div>' +
+                "<div class='room-content'>" + players_html + '</div>'
             );
         };
     }
@@ -421,10 +436,25 @@ var [Chat, Controller, Room, Player] = (function($){
 
         /**
          * UI
-         */
+         */        
         this.render = function() {
-            // console.error('Player:render not implemented');
+            console.log("render", this);
+            if ($('#player' + this.id).length == 0) {
+                $('#players table tbody').append(
+                    "<tr id='player_" + this.id + "' class='player'></tr>"
+                );
+            }
+
+            var room = this.room === null ? "-" : this.room.id;
+            $("#player_"+ this.id).html(
+                "<td>" + this.username + "</td>" +
+                "<td>" + room + "</td>"
+            );
         };
+
+        this.unrender = function(){
+            $("#player_"+ this.id).remove();
+        }
     }
 
     return [Chat, Controller, Room, Player];
