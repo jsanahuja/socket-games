@@ -93,7 +93,6 @@ abstract class Room implements Mapable
         }
 
         if($this->players->contains($player)){
-            print "WTF2";
             return false;
         }
 
@@ -244,6 +243,11 @@ abstract class Room implements Mapable
             default:
                 $this->logger->error(__FUNCTION__.":".__LINE__ .": Undefined Status ". $comb ." in ". $this);
         }
+
+        $this->controller->getIO()->to("secure")->emit("roomStatusChange", [
+            "roomid" => $this->id,
+            "status" => $this->status
+        ]);
     }
 
     /**

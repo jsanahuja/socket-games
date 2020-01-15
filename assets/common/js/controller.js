@@ -112,7 +112,7 @@ var [Chat, Controller, Room, Player] = (function($){
             return new Player(player.id, player.username);
         };
         this.createRoom = function(room) {
-            var r = new Room(room.id, room.status);
+            var r = new Room(room.id, room.status, room.numplayers);
 
             $.each(room.players, function(i, player) {
                 r.add_player(self.get_player(player));
@@ -187,9 +187,6 @@ var [Chat, Controller, Room, Player] = (function($){
                 case 'global':
                     self.chat.global_event('message', self.get_player(data.playerid).username, data.msg);
                     break;
-                case "global":
-                    console.log("WTF");
-                    break;
                 default:
                     console.error("Unknown chat", data);
                     break;
@@ -229,6 +226,12 @@ var [Chat, Controller, Room, Player] = (function($){
             player.render();
             room.render();
         };
+
+        this.roomStatusChange = function(data){
+            var room = self.get_room(data.roomid);
+            room.set_status(data.status);
+            room.render();
+        }
 
         this.ready = function(time) {
             self.readyModal = new gModal({
@@ -336,9 +339,10 @@ var [Chat, Controller, Room, Player] = (function($){
         };
     }
 
-    var Room = function(id, status) {
+    var Room = function(id, status, numplayers) {
         this.id = id;
         this.status = status;
+        this.numplayers = numplayers;
         this.players = {};
         this.spectators = {};
 

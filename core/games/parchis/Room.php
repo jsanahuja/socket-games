@@ -23,7 +23,6 @@ class Room extends \Games\Core\Room
     {
         $this->acks = array();
 
-        $this->turn = false;
         $this->numplayers = 1;
         $this->dices = array();
 
@@ -71,7 +70,7 @@ class Room extends \Games\Core\Room
         }
     }
 
-    public function turn()
+    public function next_turn()
     {
         $this->assign_next_turn();
         $this->doubles = 0;
@@ -81,7 +80,7 @@ class Room extends \Games\Core\Room
         } else {
             $this->logger->debug("cant premove", $this->turn->serialize());
             $this->infoCantMove();
-            $this->turn();
+            $this->next_turn();
         }
     }
 
@@ -93,7 +92,7 @@ class Room extends \Games\Core\Room
                 $this->infoDie($chip);
             }
             $this->infoMaxDoubles();
-            $this->turn();
+            $this->next_turn();
             return;
         }
         
@@ -118,7 +117,7 @@ class Room extends \Games\Core\Room
                 $this->requestThrowDices();
             } else {
                 // Not double, next turn
-                $this->turn();
+                $this->next_turn();
             }
         }
     }
@@ -316,6 +315,8 @@ class Room extends \Games\Core\Room
 
     protected function start()
     {
+        $this->turn = false;
+
         $this->assign_player_colors();
         $this->assign_player_chips();
         
@@ -326,7 +327,7 @@ class Room extends \Games\Core\Room
         
         // @TODO: What if never ACK?
         $this->acks["play"] = new ACK($this->players, function () {
-            $this->turn();
+            $this->next_turn();
         });
         $this->infoPlay();
     }

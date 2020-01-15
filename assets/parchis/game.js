@@ -1,4 +1,5 @@
-(function($, port) {
+// (function($, port) {
+    var port = PORT;
     /**
      * GAME 
      * SPECITIC
@@ -537,6 +538,8 @@
             socket.on('playerJoinRoom', controller.playerJoinRoom);
             socket.on('playerSpectateRoom', controller.playerSpectateRoom);
             socket.on('playerLeaveRoom', controller.playerLeaveRoom);
+            
+            socket.on('roomStatusChange', controller.roomStatusChange);
 
             $(document).on('click', '.join', controller.joinRoom);
             $(document).on('click', '.spectate', controller.joinRoom);
@@ -582,7 +585,9 @@
 
             $(window).on('resize', function(e) {
                 // Play height
-                var min = Math.min($('#game').height(), $('#game').width()) - 20;
+                // var min = Math.min($('#game').height(), $('#game').width()) - 20;
+
+                var min = Math.min(800, $("body").height());
 
                 $('#play').css({ height: min, width: min });
             });
@@ -598,4 +603,4 @@
     socket.on('disconnected', function() {
         socket.emit('disconnect');
     });
-})(jQuery, PORT);
+// })(jQuery, PORT);

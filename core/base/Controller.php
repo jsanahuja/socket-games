@@ -55,17 +55,6 @@ class Controller implements \JsonSerializable
         return isset($socket->player) && $this->players->contains($socket->player);
     }
 
-    // Legacy
-    public function roomEmit($room, $event, $data = null)
-    {
-        // $this->logger->info(__FUNCTION__.":".__LINE__ .":". $this->rooms[$id] .":".$event);
-        if ($data !== null) {
-            $this->io->to("room" . $room->getId())->emit($event, $data);
-        } else {
-            $this->io->to("room" . $room->getId())->emit($event);
-        }
-    }
-
     /**
      * Handlers
      */
@@ -344,7 +333,6 @@ class Controller implements \JsonSerializable
         }
     }
 
-    
     public function jsonSerialize()
     {
         return [

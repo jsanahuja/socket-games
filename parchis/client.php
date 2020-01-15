@@ -55,14 +55,15 @@
         .section-content table tbody::-webkit-scrollbar-thumb:hover {background: #353535;}
         .section-content table tbody::-webkit-scrollbar-track-piece {}
 
-        #players .section-content{height:340px;}
+        #players {padding: 0 0.25em;}
+        #players .section-content{height:366px;}
         
-        #chat {padding: 0;}
+        #chat {padding: 0 0.25em;}
         #chat .chat-nav li {cursor: pointer;width: 50%;padding: 5px 0;background: #FFF;text-align: center;border:1px #777 solid;color:#777;border-top:0;box-sizing: border-box;}
         #chat .chat-nav li:first-child {border-left: 0;}
         #chat .chat-nav li:last-child {border-right: 0;}
         #chat .chat-nav li.active {border: 0;color: #353535;}
-        #chat .chat-window {overflow-y: auto;margin:0.25em;border-top: 0;padding: 0.25em 0.5em;height:300px;}
+        #chat .chat-window {overflow-y: auto;margin:0.25em;border-top: 0;padding: 0.25em 0.5em;height:274px;}
         #chat .chat-window::-webkit-scrollbar {width: 5px;background: #CECECE;}
         #chat .chat-window::-webkit-scrollbar-track {}
         #chat .chat-window::-webkit-scrollbar-thumb {background: #353535;border-radius: 6px;}
@@ -104,7 +105,47 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div id="game" class="p-3 col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+            <div id="panel" class="p-3 col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+                <div class="row">
+                    <div id="chat" class="col-xl-12 col-lg-12 col-md-6 col-sm-6 col-6 mb-3">
+                        <div class="section-header text-center">Chat</div>
+                        <div class="section-content pb-1">
+                            <ul class="chat-nav nav">
+                                <li class="chat-tab" data-nav="global">Sala</li>
+                                <li class="chat-tab" data-nav="room">Mesa</li>
+                            </ul>
+                            <div class="chat-window d-none" data-nav="global"></div>
+                            <div class="chat-window d-none" data-nav="room"></div>
+                            <div class="chat-input">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Mensaje..." id="chat-message" />
+                                    <div class="input-group-append">
+                                        <input type="submit" id="chat-submit" class="btn btn-outline-primary" value="Enviar" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="players" class="col-xl-12 col-lg-12 col-md-6 col-sm-6 col-6">
+                        <div class="section-header text-center">Jugadores</div>
+                        <div class="section-content">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Jugador</th>
+                                        <th>Sala</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="game" class="p-3 col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12 col-md-push-12">
                 <div id="loading" class="row">
                     <div class="loading">
                         <img src="/assets/common/images/loading.svg" alt="Spinner loading" />
@@ -280,45 +321,6 @@
                     <div class="chip green"  draggable="true" id="chip_green_3"></div>
                 </div>
                 <div id="rooms" class="row"></div>
-            </div>
-
-            <div class="p-3 col-xl-3 col-lg-3 col-md-4 col-sm-12 col-12">
-                <div id="chat">
-                    <div class="section-header text-center">Chat</div>
-                    <div class="section-content pb-1">
-                        <ul class="chat-nav nav">
-                            <li class="chat-tab" data-nav="global">Sala</li>
-                            <li class="chat-tab" data-nav="room">Mesa</li>
-                        </ul>
-                        <div class="chat-window d-none" data-nav="global"></div>
-                        <div class="chat-window d-none" data-nav="room"></div>
-                        <div class="chat-input">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Mensaje..." id="chat-message" />
-                                <div class="input-group-append">
-                                    <input type="submit" id="chat-submit" class="btn btn-outline-primary" value="Enviar" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="players" class="mt-3">
-                    <div class="section-header text-center">Jugadores</div>
-                    <div class="section-content">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Jugador</th>
-                                    <th>Sala</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
             </div>
         </div>
     </div>
