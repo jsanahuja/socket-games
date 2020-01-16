@@ -314,7 +314,7 @@ class Board
             $this->update($chip, $to);
     
             // Bridge
-            if (sizeof($this->tmp_bridge) > 0) {
+            if (sizeof($this->tmp_bridge) > 0 && $jumps !== array_sum($dices)) {
                 $this->bridge = $this->tmp_bridge;
             } else {
                 $this->bridge = array();
