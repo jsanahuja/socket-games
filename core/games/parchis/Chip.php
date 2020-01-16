@@ -12,7 +12,7 @@ class Chip implements Mapable
     private $color;
     private $position;
 
-    public function __construct($id, Color $color, $position = -1)
+    public function __construct(int $id, Color $color, int $position = -1)
     {
         $this->id = $id;
         $this->color = $color;
@@ -34,7 +34,7 @@ class Chip implements Mapable
         return $this->color;
     }
 
-    public function set_position($position)
+    public function set_position(int $position)
     {
         $this->position = $position;
     }

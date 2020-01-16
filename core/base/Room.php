@@ -149,7 +149,7 @@ abstract class Room implements Mapable
         
         $this->spectators->add($player);
         $player->getSocket()->join("r" . $this->id);
-
+        $this->stream($player);
         return true;
     }
 
@@ -278,6 +278,8 @@ abstract class Room implements Mapable
     }
 
     abstract protected function start();
+
+    abstract protected function stream($player);
 
     abstract protected function finish();
 

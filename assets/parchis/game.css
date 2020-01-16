@@ -5,7 +5,7 @@
 #game #play #square_red    {position:absolute;width:30%;height:30%;background:#e7413c;background: linear-gradient(135deg, #e7413c 0%, #e99c9b 100%);right:0px;bottom:0px;border-top-left-radius:6px;}
 
 #game #play .user{display:none;position: absolute;background: #FFF;border: 2px #fff solid;border-radius: 3px;}
-#game #play .user .profilepic{height: 60px;width: 60px;background: #CCC;display: inline-block;vertical-align: middle;}
+#game #play .user .profilepic{height: 60px;width: 60px;background-color: #CCC;background-image:url(/assets/common/images/user.png);background-size: cover;display: inline-block;vertical-align: middle;}
 #game #play .user .username{display: inline-block;padding: 0px 0.5em;}
 
 #game #play #square_yellow .user{top:0; left:0;}
@@ -63,6 +63,7 @@
 
 #game #play .chip{position: absolute;display:none;z-index:10;top: 48.5%;left: 48.5%;height: 3%;width: 3%;border-radius: 100%;box-shadow: 0px 0px 2px 1px #000;}
 #game #play .chip.active{cursor:pointer;animation: chipbeating 1s infinite;transform-origin: center;}
+#game #play .chip.dragging{pointer-events: none;}
 
 @keyframes dicesbeating {
     from { transform: rotate(-45deg); }

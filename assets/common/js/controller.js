@@ -23,6 +23,9 @@ var [Chat, Controller, Room, Player] = (function($){
                 case 'message':
                     msg = '<strong>' + data + '</strong>: ' + extra;
                     break;
+                case 'log':
+                    msg = "<span class='log'>" + data + "</span>";
+                    break;
             }
 
             if (msg != '') {
@@ -44,6 +47,9 @@ var [Chat, Controller, Room, Player] = (function($){
                     break;
                 case 'message':
                     msg = '<strong>' + data + '</strong>: ' + extra;
+                    break;
+                case 'log':
+                    msg = "<span class='log'>" + data + "</span>";
                     break;
             }
 
@@ -118,7 +124,7 @@ var [Chat, Controller, Room, Player] = (function($){
                 r.add_player(self.get_player(player));
             });
             $.each(room.spectators, function(i, player) {
-                r.add_spectators(self.get_player(player));
+                r.add_spectator(self.get_player(player));
             });
             return r;
         };
@@ -202,6 +208,10 @@ var [Chat, Controller, Room, Player] = (function($){
 
             player.render();
             room.render();
+
+            if(self.id === data.playerid){
+                self.chat.local_event('log', "Te has sentado en la mesa "+ room.id);
+            }
         };
 
         this.playerSpectateRoom = function(data){
@@ -213,6 +223,10 @@ var [Chat, Controller, Room, Player] = (function($){
 
             player.render();
             room.render();
+            
+            if(self.id === data.playerid){
+                self.chat.local_event('log', "Estás espectando la mesa "+ room.id);
+            }
         };
 
         this.playerLeaveRoom = function(data){
@@ -225,6 +239,10 @@ var [Chat, Controller, Room, Player] = (function($){
 
             player.render();
             room.render();
+
+            if(self.id === data.playerid){
+                self.chat.local_event('log', "Has dejado la mesa "+ room.id);
+            }
         };
 
         this.roomStatusChange = function(data){
@@ -233,7 +251,7 @@ var [Chat, Controller, Room, Player] = (function($){
             room.render();
         }
 
-        this.ready = function(time) {
+        this.roomRequestReady = function(time) {
             self.readyModal = new gModal({
                 title: 'La partida va a empezar. ¿Estás list@?',
                 body: '<div class="ready-timer">' + time + '</div>',
@@ -280,7 +298,7 @@ var [Chat, Controller, Room, Player] = (function($){
             self.readyModal.show();
         };
 
-        this.unready = function() {
+        this.roomUnready = function() {
             if (typeof self.readyModal != 'undefined') self.readyModal.hide();
             if (typeof self.pendingModal != 'undefined') self.pendingModal.hide();
         };
@@ -322,7 +340,7 @@ var [Chat, Controller, Room, Player] = (function($){
                 self.leaveRoom();
             }
 
-            self.socket.emit('spectate', { room: self.room().id });
+            self.socket.emit('spectate', { room: targetRoom.id });
         };
 
         this.render = function() {
@@ -333,6 +351,7 @@ var [Chat, Controller, Room, Player] = (function($){
                 player.render();
             });
 
+            self.chat.global_event('log', "Has entrado en la sala");
             $('#loading').hide();
             $('#play').hide();
             $('#rooms').css('display', 'flex');

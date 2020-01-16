@@ -71,6 +71,7 @@
         #chat .chat-window::-webkit-scrollbar-track-piece {}
         #chat .chat-window p {margin-bottom: 0;}
         #chat .chat-input {border-top: 0;padding: 0.25em 0.5em;}
+        #chat .log{color:#6ea8ff;}
 
         #loading .loading{display: inline-block;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);}
 
@@ -303,22 +304,22 @@
                         </div>
                     </div>
 
-                    <div class="chip yellow" draggable="true" id="chip_yellow_0"></div>
-                    <div class="chip yellow" draggable="true" id="chip_yellow_1"></div>
-                    <div class="chip yellow" draggable="true" id="chip_yellow_2"></div>
-                    <div class="chip yellow" draggable="true" id="chip_yellow_3"></div>
-                    <div class="chip blue"   draggable="true" id="chip_blue_0"></div>
-                    <div class="chip blue"   draggable="true" id="chip_blue_1"></div>
-                    <div class="chip blue"   draggable="true" id="chip_blue_2"></div>
-                    <div class="chip blue"   draggable="true" id="chip_blue_3"></div>
-                    <div class="chip red"    draggable="true" id="chip_red_0"></div>
-                    <div class="chip red"    draggable="true" id="chip_red_1"></div>
-                    <div class="chip red"    draggable="true" id="chip_red_2"></div>
-                    <div class="chip red"    draggable="true" id="chip_red_3"></div>
-                    <div class="chip green"  draggable="true" id="chip_green_0"></div>
-                    <div class="chip green"  draggable="true" id="chip_green_1"></div>
-                    <div class="chip green"  draggable="true" id="chip_green_2"></div>
-                    <div class="chip green"  draggable="true" id="chip_green_3"></div>
+                    <div class="chip yellow" id="chip_yellow_0"></div>
+                    <div class="chip yellow" id="chip_yellow_1"></div>
+                    <div class="chip yellow" id="chip_yellow_2"></div>
+                    <div class="chip yellow" id="chip_yellow_3"></div>
+                    <div class="chip blue"   id="chip_blue_0"></div>
+                    <div class="chip blue"   id="chip_blue_1"></div>
+                    <div class="chip blue"   id="chip_blue_2"></div>
+                    <div class="chip blue"   id="chip_blue_3"></div>
+                    <div class="chip red"    id="chip_red_0"></div>
+                    <div class="chip red"    id="chip_red_1"></div>
+                    <div class="chip red"    id="chip_red_2"></div>
+                    <div class="chip red"    id="chip_red_3"></div>
+                    <div class="chip green"  id="chip_green_0"></div>
+                    <div class="chip green"  id="chip_green_1"></div>
+                    <div class="chip green"  id="chip_green_2"></div>
+                    <div class="chip green"  id="chip_green_3"></div>
                 </div>
                 <div id="rooms" class="row"></div>
             </div>

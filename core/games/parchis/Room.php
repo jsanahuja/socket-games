@@ -23,11 +23,38 @@ class Room extends \Games\Core\Room
     {
         $this->acks = array();
 
-        $this->numplayers = 1;
+        $this->numplayers = 2;
         $this->dices = array();
 
         $this->throw_dices = false;
         $this->make_move = false;
+    }
+
+    protected function start()
+    {
+        $this->turn = false;
+
+        $this->assign_player_colors();
+        $this->assign_player_chips();
+        
+        $this->board = new Board();
+        
+        // @TODO: First chip out?
+        // $dices = $this->board->move($this->turn, $chip, $to, $this->dices);
+        
+        // @TODO: What if never ACK?
+        $this->acks["play"] = new ACK($this->players, function () {
+            $this->next_turn();
+        });
+        $this->infoPlay();
+    }
+
+    protected function stream($player){
+        $this->infoSpectator($player);
+    }
+
+    protected function finish()
+    {
     }
 
     /**
@@ -303,6 +330,10 @@ class Room extends \Games\Core\Room
         $this->emit("play", $this->gameSerialize());
     }
 
+    protected function infoSpectator(Player $player){
+        $player->getSocket()->emit("play", $this->gameSerialize());
+    }
+
     protected function infoCantMove()
     {
         $this->emit("skip_move", $this->turn->getId());
@@ -311,29 +342,6 @@ class Room extends \Games\Core\Room
     protected function infoMaxDoubles()
     {
         $this->emit("skip_double", $this->turn->getId());
-    }
-
-    protected function start()
-    {
-        $this->turn = false;
-
-        $this->assign_player_colors();
-        $this->assign_player_chips();
-        
-        $this->board = new Board();
-        
-        // @TODO: First chip out?
-        // $dices = $this->board->move($this->turn, $chip, $to, $this->dices);
-        
-        // @TODO: What if never ACK?
-        $this->acks["play"] = new ACK($this->players, function () {
-            $this->next_turn();
-        });
-        $this->infoPlay();
-    }
-
-    protected function finish()
-    {
     }
 
     /**

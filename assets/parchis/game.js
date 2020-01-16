@@ -9,17 +9,19 @@
         this.game = game;
 
         $('.dices').on('click', this.game.throw_dices);
-        $('.chip').on('dragstart', this.game.start_move);
-        $('.box').on('drop', this.game.make_move);
-
+        $('.chip').on('click', this.game.start_move);
+        $('#play').on('mousemove', this.game.on_move);
+        $('.box').on('click', this.game.make_move);
+        
         $('.box').on('dragover', function(e) {
             e.preventDefault();
         });
 
-        $('.chip').on('mouseover', this.game.highlight_moves);
+        $('.chip').on('mouseover', function(e){
+            self.game.highlight_moves($(this))
+        });
         $('.chip').on('mouseout', this.game.unhighlight_moves);
 
-        console.log(this);
         this.socket.on('dices', this.game.request_dices);
         this.socket.on('info_dices', this.game.info_dices);
         this.socket.on('move', this.game.request_move);
@@ -168,7 +170,7 @@
         };
     }
 
-    function Chip(id, position, color, game, domElement) {
+    var Chip = function(id, position, color, game, domElement) {
         this.id = id;
         this.position = position;
         this.color = color;
@@ -244,10 +246,10 @@
             while (true) {
                 this.position = this.color.get_next(this.position);
                 if (this.position == to) {
-                    this.go_to(this.position, side, 75);
+                    this.go_to(this.position, side, 75, callback);
                     break;
                 } else {
-                    this.go_to(this.position, false, 75, callback);
+                    this.go_to(this.position, false, 75);
                 }
             }
         };
@@ -261,12 +263,16 @@
         };
 
         this.render = function() {
-            this.move(this.position);
+            if(this.position == -1){
+                this.go_home(500);
+            }else{
+                this.go_to(this.position, false);
+            }
             this.element.css('display', 'block');
         };
     }
 
-    function Game(id) {
+    var Game = function(id) {
         this.id = id;
 
         this.players = {};
@@ -344,7 +350,6 @@
         /**
          * Moves
          */
-        this.dragchip = false;
 
         this.request_move = function(data) {
             if (data.dices.indexOf(self.dices[0])) {
@@ -372,10 +377,9 @@
             $('.box').removeClass('active');
         };
 
-        this.highlight_moves = function() {
+        this.highlight_moves = function(chip) {
             $('.box').removeClass('active');
 
-            var chip = $(this);
             if (self.my_turn()) {
                 var [type, color, cid] = chip.attr('id').split('_');
 
@@ -389,6 +393,7 @@
             }
         };
 
+        this.dragchip = false;
         this.start_move = function(e) {
             var chip = $(this);
             if (!self.my_turn()) {
@@ -396,31 +401,50 @@
             } else {
                 var [type, color, cid] = chip.attr('id').split('_');
                 if (self.get_player(self.id).color.name === color) {
-                    self.dragchip = cid;
+                    self.dragchip = self.get_player(self.id).chips[cid];
+                    self.dragchip.element.addClass("dragging");
                 } else {
                     self.dragchip = false;
                 }
             }
         };
 
+        this.on_move = function(e){
+            if(self.dragchip !== false){
+                self.highlight_moves(self.dragchip.element);
+                self.dragchip.element.css({
+                    left: e.pageX - $("#play").offset().left - self.dragchip.element.width()/2,
+                    top:  e.pageY - $("#play").offset().top - self.dragchip.element.height()/2
+                });
+            }
+        }
+
         this.make_move = function(e) {
             e.preventDefault();
+            if (self.dragchip === false) {
+                return false;
+            }
+
             var box = $(this);
             if (!self.my_turn()) {
                 return false;
             }
-            if (!self.dragchip) {
-                return false;
-            }
 
-            var to = box.attr('id').split('_')[1];
+            var to = box.attr('id').split('_')[1],
+                chip = self.dragchip,
+                cid = chip.id;
+
+            self.dragchip.element.removeClass("dragging");
+            self.dragchip = false;
+            self.unhighlight_moves();
 
             for (var i = 0; i < self.moves.length; i++) {
-                if (self.moves[i][0] == self.dragchip && self.moves[i][1] == to) {
-                    socket.emit('action', { action: 'move', id: self.dragchip, to: to });
+                if (self.moves[i][0] == cid && self.moves[i][1] == to) {
+                    socket.emit('action', { action: 'move', id: cid, to: to });
                     return;
                 }
             }
+            chip.render();
         };
 
         this.confirm_move = function(data) {
@@ -456,8 +480,8 @@
 
         this.get_box_position = function(bid, side) {
             var rotated = (bid >= 9 && bid <= 25) || (bid >= 43 && bid <= 59),
-                box = $('#box_' + bid),
-                pos = {
+                box = $('#box_' + bid);
+                var pos = {
                     left:
                         box.offset().left -
                         $('#play').offset().left +
@@ -502,6 +526,8 @@
         dices: new Audio('/assets/parchis/dices.mp3'),
         chip: new Audio('/assets/parchis/chip.mp3')
     };
+    audio.dices.loop = false;
+    audio.chip.loop = false;
 
     socket.on('connect', function() {
         if (connected) {
@@ -542,15 +568,17 @@
             socket.on('roomStatusChange', controller.roomStatusChange);
 
             $(document).on('click', '.join', controller.joinRoom);
-            $(document).on('click', '.spectate', controller.joinRoom);
+            $(document).on('click', '.spectate', controller.spectateRoom);
             $(document).on('click', '.leave', controller.leaveRoom);
 
-            socket.on('ready', controller.ready);
-            socket.on('unready', controller.unready);
+            socket.on('ready', controller.roomRequestReady);
+            socket.on('unready', controller.roomUnready);
 
             socket.on('play', function(data) {
+                console.log(data);
                 game = new Game(controller.id);
                 $.each(data.players, function(i, player) {
+                    var playerObject = controller.get_player(player.id);
                     var color = new Color(
                         player.color.id,
                         player.color.name,
@@ -561,8 +589,8 @@
                         $('#square_' + player.color.name)
                     );
 
-                    controller.get_player(player.id).set_color(color);
-                    controller.get_player(player.id).init_chips();
+                    playerObject.set_color(color);
+                    playerObject.init_chips();
 
                     $.each(player.chips, function(j, chip) {
                         var chip = new Chip(
@@ -573,10 +601,11 @@
                             $('#chip_' + color.name + '_' + chip.id)
                         );
                         chip.render();
-                        controller.get_player(player.id).add_chip(chip);
+                        playerObject.add_chip(chip);
                     });
 
-                    game.add_player(controller.get_player(player.id));
+                    game.add_player(playerObject);
+                    playerObject.display();
                 });
 
                 controller.set_game(game);
@@ -597,6 +626,7 @@
         // @TODO: Authentication
         socket.emit('auth', {
             username: 'User' + Math.floor(Math.random() * 54623523)
+            // username: prompt("Username")
         });
     });
 
