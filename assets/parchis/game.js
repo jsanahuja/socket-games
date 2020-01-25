@@ -11,11 +11,31 @@
         $('.dices').on('click', this.game.throw_dices);
         $('.chip').on('click', this.game.start_move);
         $('#play').on('mousemove', this.game.on_move);
-        $('.box').on('click', this.game.make_move);
-        
-        $('.box').on('dragover', function(e) {
+        $('.box').on('click', function(e){
             e.preventDefault();
+            e.stopPropagation();
+            game.make_move($(this));
+            return false;
         });
+
+        // $('.chip').on('dragstart', function(e){
+        //     e.preventDefault();
+        //     e.stopPropagation();
+        //     $(this).trigger("click");
+        //     return false;
+        // });
+        
+        // $('.chip').on('drag', function(e){
+        //     e.preventDefault();
+        //     e.stopPropagation();
+        //     return false;
+        // });
+        
+        // $('.box').on('dragover', function(e) {
+        //     e.preventDefault();
+        //     e.stopPropagation();
+        //     return false;
+        // });
 
         $('.chip').on('mouseover', function(e){
             self.game.highlight_moves($(this))
@@ -318,6 +338,7 @@
          */
         this.request_dices = function(playerid) {
             self.turn = playerid;
+            self.moves = [];
             self.dices = [];
             if (self.my_turn()) {
                 $('.dices').addClass('active');
@@ -396,12 +417,25 @@
         this.dragchip = false;
         this.start_move = function(e) {
             var chip = $(this);
+
+            // Get target chip
+            var [type, color, cid] = chip.attr('id').split('_');
+            var targetChip = self.get_player(self.id).chips[cid];
+            
+            // Use target as TO if already dragging.
+            if(self.dragchip !== false){
+                self.make_move($("#box_" + targetChip.position));
+                return;
+            }
+
+            // Cancel previous move else
+            self.cancel_move(true);
+
             if (!self.my_turn()) {
                 self.dragchip = false;
             } else {
-                var [type, color, cid] = chip.attr('id').split('_');
                 if (self.get_player(self.id).color.name === color) {
-                    self.dragchip = self.get_player(self.id).chips[cid];
+                    self.dragchip = targetChip;
                     self.dragchip.element.addClass("dragging");
                 } else {
                     self.dragchip = false;
@@ -419,32 +453,37 @@
             }
         }
 
-        this.make_move = function(e) {
-            e.preventDefault();
+        this.cancel_move = function(render){
+            if(self.dragchip !== false){
+                self.dragchip.element.removeClass("dragging");
+                if(render){
+                    self.dragchip.render();
+                }
+                self.unhighlight_moves();
+                self.dragchip = false;
+            }
+        }
+
+        this.make_move = function(box) {
             if (self.dragchip === false) {
                 return false;
             }
 
-            var box = $(this);
             if (!self.my_turn()) {
                 return false;
             }
 
             var to = box.attr('id').split('_')[1],
-                chip = self.dragchip,
-                cid = chip.id;
-
-            self.dragchip.element.removeClass("dragging");
-            self.dragchip = false;
-            self.unhighlight_moves();
+                cid = self.dragchip.id;
 
             for (var i = 0; i < self.moves.length; i++) {
                 if (self.moves[i][0] == cid && self.moves[i][1] == to) {
                     socket.emit('action', { action: 'move', id: cid, to: to });
+                    self.cancel_move(false);
                     return;
                 }
             }
-            chip.render();
+            self.cancel_move(true);
         };
 
         this.confirm_move = function(data) {
@@ -485,12 +524,12 @@
                     left:
                         box.offset().left -
                         $('#play').offset().left +
-                        (rotated ? box.height() : box.width()) / 2 -
+                        (rotated ? $("#box_1").height() : $("#box_1").width()) / 2 -
                         $('.chip').width() / 2,
                     top:
                         box.offset().top -
                         $('#play').offset().top +
-                        (rotated ? box.width() : box.height()) / 2 -
+                        (rotated ? $("#box_1").width() : $("#box_1").height()) / 2 -
                         $('.chip').height() / 2
                 };
 

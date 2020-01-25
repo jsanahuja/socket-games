@@ -1,6 +1,6 @@
 <?php
     // Manual, we do not need everything
-    require_once("../core/globals.php");
+    require_once("../core/include/games.php");
 ?>
 <!doctype html>
 <html>
@@ -17,14 +17,14 @@
         body{background: #d8d8d8;}
         .container-fluid{padding:0}
         .row{margin:0;}
-
-/*         
-        body::-webkit-scrollbar {width: 12px;background:white;border-left:1px #007bff solid;}
-        body::-webkit-scrollbar-track {border-right: 1px #007bff solid;padding: 2px;}
-        body::-webkit-scrollbar-thumb {background: #4ca2ff;border-radius: 3px;}
-        body::-webkit-scrollbar-thumb:hover {background: #78b9ff;}
-        body::-webkit-scrollbar-track-piece {} */
-
+        .noselect {
+            -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                    -ms-user-select: none;
+                        user-select: none;
+        }
         table {display: flex;flex-flow: column;height: 100%;width: 100%;padding:0.25em;}
         table thead {flex: 0 0 auto;width: calc(100% - 0.9em);}
         table tbody {flex: 1 1 auto;display: block;overflow-y: scroll;}
@@ -97,8 +97,12 @@
             background:#FFF;
         }
 
-        .gmodal-body .ready-timer{text-align: center;font-size: 2em;}
-
+        .gmodal-wrapper{z-index:9999}
+        .gmodal-dialog{border-radius: 6px;max-width: 40em;}
+        .gmodal-dialog .gmodal-title{border-bottom: 1px #e4e4e4 solid;}
+        .gmodal-dialog .gmodal-body .ready-timer{text-align: center;font-size: 2em;}
+        .gmodal-dialog .gmodal-buttons{border-top: 1px #e4e4e4 solid;}
+        .gmodal-dialog .gmodal-buttons .gmodal-button{margin: 0.5em;}
 
         </style>
 </head>
@@ -153,7 +157,7 @@
                         <p>Conectado con el servidor...</p>
                     </div>
                 </div>
-                <div id="play">
+                <div id="play" class="noselect">
                     <div id="square_red"><div class="user"><div class="profilepic"></div><span class="username"></span></div></div>
                     <div id="square_blue"><div class="user"><div class="profilepic"></div><span class="username"></span></div></div>
                     <div id="square_green"><div class="user"><div class="profilepic"></div><span class="username"></span></div></div>

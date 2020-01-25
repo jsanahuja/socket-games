@@ -4,4 +4,4 @@ logs/
 composer.lock
 node_modules
 package-lock.json
-
+core/include/database.php

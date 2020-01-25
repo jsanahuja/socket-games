@@ -2,12 +2,17 @@
 
 namespace Games\Core;
 
+use Workerman\Lib\Timer;
+
 use Games\Core\Room;
 use Games\Core\Player;
 use Games\Utils\Mapping;
 
 class Controller implements \JsonSerializable
 {
+    private $id;
+
+    private $database;
     private $io;
     private $logger;
 
@@ -19,8 +24,10 @@ class Controller implements \JsonSerializable
 
     private $next_id;
 
-    public function __construct($io, $logger, $roomClass, $playerClass)
+    public function __construct($id, $database, $io, $logger, $roomClass, $playerClass)
     {
+        $this->id = $id;
+        $this->database = $database;
         $this->io = $io;
         $this->logger = $logger;
         
@@ -35,6 +42,11 @@ class Controller implements \JsonSerializable
         for ($i = 1; $i <= PARCHIS_ROOMS; $i++) {
             $this->rooms->add(new $this->roomClass($i, $this, $logger));
         }
+
+        // Status periodic update
+        Timer::add(LAPSE_STATUS_UPDATE, function () {
+            $this->statusUpdate();
+        }, array(), true);
     }
 
     /**
@@ -333,6 +345,20 @@ class Controller implements \JsonSerializable
         }
     }
 
+    /**
+     * Self status update
+     */
+    public function statusUpdate(){
+        $this->database->update("servers")
+            ->set("players", sizeof($this->players))
+            ->set("updated", time())
+            ->condition("id", "=", $this->id)
+            ->run();
+    }
+
+    /**
+     * JSON Serializable
+     */
     public function jsonSerialize()
     {
         return [

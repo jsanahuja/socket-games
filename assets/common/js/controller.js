@@ -258,7 +258,7 @@ var [Chat, Controller, Room, Player] = (function($){
                 buttons: [
                     {
                         content: '¡Vamos!',
-                        classes: 'gmodal-button-blue',
+                        classes: 'btn btn-primary',
                         bindKey: 13 /* Enter */,
                         callback: function(modal) {
                             self.socket.emit('ready');
