@@ -44,9 +44,9 @@ foreach($servers as $server){
         'ssl' => array(
             'local_cert'  => CERT_CA,
             'local_pk'    => CERT_KEY,
-            'verify_peer' => true,
-            'allow_self_signed' => false,
-            'verify_peer_name' => true
+            'verify_peer' => false,
+            'allow_self_signed' => true,
+            'verify_peer_name' => false
         )
     ));
 

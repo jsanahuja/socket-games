@@ -1,5 +1,7 @@
 <?php
 
+define("SITE_NAME", "");
+
 define("DB_HOSTNAME", "localhost");
 define("DB_USERNAME", "");
 define("DB_PASSWORD", "");
@@ -11,7 +13,7 @@ define("CERT_KEY", "");
 define("KEYCHAIN_PK", "");
 
 define("SMTP_AUTH",         true);
-define("SMTP_TLS",          true);
+define("SMTP_SECURITY",     "tls");
 define("SMTP_HOSTNAME",     "localhost");
 define("SMTP_USERNAME",     "");
 define("SMTP_PASSWORD",     "");

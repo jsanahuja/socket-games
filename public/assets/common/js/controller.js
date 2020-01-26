@@ -385,7 +385,7 @@ var [Utils, Chat, Controller, Room, Player] = (function($){
 
             self.chat.global_event('log', "Has entrado en la sala");
             $('#play').hide();
-            $('#rooms').css('display', 'flexd');
+            $('#rooms').css('display', 'flex');
 
             $('#loading').hide();
             $('#panel').show();

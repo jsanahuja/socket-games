@@ -39,8 +39,8 @@ class GameManager extends HTMLEndpoint{
 
         $this->replaces["title"] = ucfirst($server['game']) . " - " . $server['name']  . " - " . SITE_NAME;
         $this->replaces["port"] = $server['port'];
-        $this->replaces["id"] = 1;
-        $this->replaces["username"] = 1;
+        $this->replaces["id"] = "Math.floor(Math.random() * 99999)";
+        $this->replaces["username"] = "User";
         $this->replaces["token"] = 1;
     }
 

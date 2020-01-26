@@ -15,8 +15,7 @@ User=root
 Group=root
 Type=forking
 ExecStart=/opt/www/games/servers/parchis.php start -d 2>&1 >> /opt/www/games/logs/debug.log
-ExecStop=/opt/www/games/servers/parchis.php stop -g
-ExecReload=/opt/www/games/servers/parchis.php reload -g
+ExecStop=/opt/www/games/servers/parchis.php stop
 RestartSec=15
 Restart=always
 

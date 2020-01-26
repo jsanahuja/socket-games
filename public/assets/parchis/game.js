@@ -676,7 +676,7 @@
         if(!connected){
             Utils.offline();
         }
-    }, 500);
+    }, 5000);
 
     socket.on('disconnected', function() {
         socket.emit('disconnect');
