@@ -1,17 +1,43 @@
 {
   "standardx": {
-    "globals": ["jQuery", "gModal"]
+    "globals": [
+      "jQuery",
+      "gModal"
+    ]
   },
   "eslintConfig": {
     "rules": {
-      "indent": ["error", 4],
-      "space-before-function-paren": ["error", {
-        "anonymous": "never",
-        "named": "never"
-      }],
-      "semi": [2, "always"],
-      "max-len": ["error", { "code": 100 }],
-      "eqeqeq": ["error", "allow-null"]
+      "indent": [
+        "error",
+        4
+      ],
+      "space-before-function-paren": [
+        "error",
+        {
+          "anonymous": "never",
+          "named": "never"
+        }
+      ],
+      "semi": [
+        2,
+        "always"
+      ],
+      "max-len": [
+        "error",
+        {
+          "code": 100
+        }
+      ],
+      "eqeqeq": [
+        "error",
+        "allow-null"
+      ]
     }
+  },
+  "scripts": {
+    "fontello": "fontello-cli install --config public/assets/fontello/config.json --css public/assets/fontello/css --font public/assets/fontello/font"
+  },
+  "devDependencies": {
+    "fontello-cli": "^0.5.0"
   }
 }

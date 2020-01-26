@@ -1,5 +1,37 @@
 
-var [Chat, Controller, Room, Player] = (function($){
+var [Utils, Chat, Controller, Room, Player] = (function($){
+
+    var Utils = {
+        reconnect: function(){
+            location.reload();
+        },
+
+        offline: function(){
+            var offlineModal = new gModal({
+                title: 'No hemos podido conectar con el servidor',
+                body: '<p>El servidor está tardando demasiado en responder. Por favor, <strong>verifica que tienes conexión a internet</strong> e inténtalo de nuevo.</p>' +
+                    '<ul><li>No tienes servicio de conexión a internet.</li>'+
+                    '<li>Nuestros servicios estan en mantenimiento.</li></ul>'+
+                    '<p>Por favor, verifica que tienes conexión a internet y vuelve a intentarlo</p>',
+                buttons: [
+                    {
+                        content: 'Aceptar',
+                        classes: 'btn btn-primary',
+                        bindKey: 13 /* Enter */
+                    }
+                ],
+                close: {
+                    closable: true,
+                    location: 'in' /* 'in' or 'out' (side) the modal */,
+                    bindKey: 27 /* Esc */,
+                    callback: function(modal) {
+                        modal.hide();
+                    }
+                }
+            });
+            offlineModal.show();
+        }
+    }
 
     var Chat = function(socket) {
         this.tab = 'global';
@@ -352,9 +384,12 @@ var [Chat, Controller, Room, Player] = (function($){
             });
 
             self.chat.global_event('log', "Has entrado en la sala");
-            $('#loading').hide();
             $('#play').hide();
-            $('#rooms').css('display', 'flex');
+            $('#rooms').css('display', 'flexd');
+
+            $('#loading').hide();
+            $('#panel').show();
+            $('#game').show();
         };
     }
 
@@ -480,5 +515,5 @@ var [Chat, Controller, Room, Player] = (function($){
         }
     }
 
-    return [Chat, Controller, Room, Player];
+    return [Utils, Chat, Controller, Room, Player];
 })(jQuery)

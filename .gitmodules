@@ -1,3 +1,9 @@
 [submodule "assets/gModal"]
 	path = assets/gModal
 	url = https://github.com/jsanahuja/gModal.git
+[submodule "gModal"]
+	path = gModal
+	url = git@github.com:jsanahuja/gModal.git
+[submodule "public/assets/gModal"]
+	path = public/assets/gModal
+	url = git@github.com:jsanahuja/gModal.git

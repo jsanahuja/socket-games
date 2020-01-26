@@ -1,18 +1,20 @@
-<?php
-    // Manual, we do not need everything
-    require_once("../core/include/games.php");
-?>
 <!doctype html>
 <html>
 
 <head>
-    <title>Parchis</title>
+    <title>%%%TITLE%%%</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="/assets/gModal/dist/gModal.min.css" rel="stylesheet" type="text/css" />
-    <link href="/assets/fontello/css/icons.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/fontello/css/fontello.css" rel="stylesheet" type="text/css" />
     <link href="/assets/parchis/game.css" rel="stylesheet" type="text/css" />
 
+    <script>
+        var port = %%%PORT%%%,
+            id = %%%ID%%%,
+            username = "%%%USERNAME%%%",
+            token = "%%%TOKEN%%%";
+    </script>
     <style>
         body{background: #d8d8d8;}
         .container-fluid{padding:0}
@@ -55,9 +57,9 @@
         .section-content table tbody::-webkit-scrollbar-thumb:hover {background: #353535;}
         .section-content table tbody::-webkit-scrollbar-track-piece {}
 
+        #panel{display:none;}
         #players {padding: 0 0.25em;}
         #players .section-content{height:366px;}
-        
         #chat {padding: 0 0.25em;}
         #chat .chat-nav li {cursor: pointer;width: 50%;padding: 5px 0;background: #FFF;text-align: center;border:1px #777 solid;color:#777;border-top:0;box-sizing: border-box;}
         #chat .chat-nav li:first-child {border-left: 0;}
@@ -73,8 +75,7 @@
         #chat .chat-input {border-top: 0;padding: 0.25em 0.5em;}
         #chat .log{color:#6ea8ff;}
 
-        #loading .loading{display: inline-block;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);}
-
+        #game{display:none;}
         #rooms{display:none;}
         #rooms .room{padding:0.25em;}
         #rooms .room .room-header{
@@ -90,12 +91,11 @@
             align-items: center;
             justify-content: space-between;
         }
-        #rooms .room .room-header button{
-        }
-        #game #rooms .room .room-content{
-            min-height:200px;
-            background:#FFF;
-        }
+        #rooms .room .room-header button{}
+        #rooms .room .room-content{min-height:200px;background:#FFF;}
+        #play{display:none;position:relative;margin:10px auto;border-radius:20px;background-color: #FFF;}
+
+        #loading .loading{display: inline-block;position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%);}
 
         .gmodal-wrapper{z-index:9999}
         .gmodal-dialog{border-radius: 6px;max-width: 40em;}
@@ -109,6 +109,12 @@
 
 <body>
     <div class="container-fluid">
+        <div id="loading" class="row">
+            <div class="loading">
+                <img src="/assets/common/images/loading.svg" alt="Spinner loading" />
+                <p>Conectado con el servidor...</p>
+            </div>
+        </div>
         <div class="row">
             <div id="panel" class="p-3 col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
                 <div class="row">
@@ -151,12 +157,6 @@
             </div>
             
             <div id="game" class="p-3 col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12 col-md-push-12">
-                <div id="loading" class="row">
-                    <div class="loading">
-                        <img src="/assets/common/images/loading.svg" alt="Spinner loading" />
-                        <p>Conectado con el servidor...</p>
-                    </div>
-                </div>
                 <div id="play" class="noselect">
                     <div id="square_red"><div class="user"><div class="profilepic"></div><span class="username"></span></div></div>
                     <div id="square_blue"><div class="user"><div class="profilepic"></div><span class="username"></span></div></div>
@@ -329,9 +329,6 @@
             </div>
         </div>
     </div>
-    <script>
-        var PORT = <?php print PARCHIS_PORT; ?>;
-    </script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
     <script src="/assets/gModal/dist/gModal.min.js"></script>

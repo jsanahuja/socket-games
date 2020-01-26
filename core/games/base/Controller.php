@@ -8,6 +8,8 @@ use Games\Core\Room;
 use Games\Core\Player;
 use Games\Utils\Mapping;
 
+use Models\Servers;
+
 class Controller implements \JsonSerializable
 {
     private $id;
@@ -349,11 +351,9 @@ class Controller implements \JsonSerializable
      * Self status update
      */
     public function statusUpdate(){
-        $this->database->update("servers")
-            ->set("players", sizeof($this->players))
-            ->set("updated", time())
-            ->condition("id", "=", $this->id)
-            ->run();
+        Servers::update($this->id, [
+            "players" => sizeof($this->players)
+        ]);
     }
 
     /**

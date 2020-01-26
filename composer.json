@@ -3,7 +3,7 @@
         "workerman/phpsocket.io": "^1.1",
         "psr/log": "^1.1",
         "monolog/monolog": "^2.0",
-        "sowe/framework": "^1.0.0"
+        "sowe/framework": "dev-master"
     },
     "autoload": {
         "files": [ 
@@ -13,7 +13,8 @@
         "psr-4": {
             "Games\\Core\\": "core/games/base",
             "Games\\Games\\": "core/games/games",
-            "Games\\Utils\\": "core/games/utils"
+            "Games\\Utils\\": "core/games/utils",
+            "": "core/"
         }
     },
     "require-dev": {

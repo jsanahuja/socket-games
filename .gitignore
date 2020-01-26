@@ -1,7 +1,9 @@
 vendor/
 logs/
+node_modules/
+public/assets/fontello/css
+public/assets/fontello/font
 .phpunit.result.cache
 composer.lock
-node_modules
 package-lock.json
-core/include/database.php
+core/include/private.php

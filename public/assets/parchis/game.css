@@ -1,4 +1,3 @@
-#game #play{display:none;position:relative;margin:10px auto;border-radius:20px;background-color: #FFF;}
 #game #play #square_yellow {position:absolute;width:30%;height:30%;background:#dad05f;background: linear-gradient(315deg, #dad05f 0%, #e9dd7f 100%);left:0px;top:0px;border-bottom-right-radius:6px;}
 #game #play #square_green  {position:absolute;width:30%;height:30%;background:#92c348;background: linear-gradient( 45deg, #92c348 0%, #a0cc6a 100%);right:0px;top:0px;border-bottom-left-radius:6px;}
 #game #play #square_blue   {position:absolute;width:30%;height:30%;background:#69a5d2;background: linear-gradient(225deg, #69a5d2 0%, #7db2d4 100%);left:0px;bottom:0px;border-top-right-radius:6px;}

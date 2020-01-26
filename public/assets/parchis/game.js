@@ -1,5 +1,4 @@
-// (function($, port) {
-    var port = PORT;
+(function($, id, username, token, port) {
     /**
      * GAME 
      * SPECITIC
@@ -570,13 +569,16 @@
 
     socket.on('connect', function() {
         if (connected) {
-            location.reload();
+            Utils.reconnect();
             return;
         }
         connected = true;
+        authenticated = false;
         controller = new Controller(socket);
 
         socket.on('successAuth', function(data) {
+            authenticated = true;
+
             controller.set_id(data.id);
 
             $.each(data.players, function(pid, player) {
@@ -664,12 +666,19 @@
 
         // @TODO: Authentication
         socket.emit('auth', {
-            username: 'User' + Math.floor(Math.random() * 54623523)
-            // username: prompt("Username")
+            id: id,
+            username: username,
+            token: token
         });
     });
+
+    setTimeout(function(){
+        if(!connected){
+            Utils.offline();
+        }
+    }, 500);
 
     socket.on('disconnected', function() {
         socket.emit('disconnect');
     });
-// })(jQuery, PORT);
+})(jQuery, id, username, token, port);
