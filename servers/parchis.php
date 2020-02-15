@@ -34,10 +34,10 @@ foreach($servers as $server){
     $stream = new StreamHandler(LOG_PATH . sprintf(PARCHIS_LOG, $server['id']), Logger::DEBUG);
     $stream->setFormatter($formatter);
     $logger->pushHandler($stream);
-    $handler = new ErrorHandler($logger);
-    $handler->registerErrorHandler([], false);
-    $handler->registerExceptionHandler();
-    $handler->registerFatalHandler();
+//  $handler = new ErrorHandler($logger);
+//  $handler->registerErrorHandler([], false);
+//  $handler->registerExceptionHandler();
+//  $handler->registerFatalHandler();
 
 
     $io = new SocketIO($server['port'], array(

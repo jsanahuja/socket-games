@@ -16,6 +16,7 @@ class GameManager extends HTMLEndpoint{
         $this->game = $game;
         $this->server = $server;
         parent::__construct();
+        $this->handle();
     }
 
     // public function post(){
