@@ -1,7 +1,5 @@
 # socket-game
 
-https://games.sowecms.com/play/parchis/kraken
-
 ## Daemonds
 
 ```
